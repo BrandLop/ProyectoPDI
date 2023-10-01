@@ -1,0 +1,125 @@
+object Form1: TForm1
+  Left = 323
+  Height = 1086
+  Top = 59
+  Width = 1247
+  Caption = 'Form1'
+  ClientHeight = 1061
+  ClientWidth = 1247
+  DesignTimePPI = 120
+  Menu = MainMenu1
+  OnCreate = FormCreate
+  LCLVersion = '2.2.6.0'
+  object ScrollBox1: TScrollBox
+    Left = 24
+    Height = 1016
+    Top = 8
+    Width = 1040
+    HorzScrollBar.Page = 136
+    VertScrollBar.Page = 120
+    ClientHeight = 1012
+    ClientWidth = 1036
+    TabOrder = 0
+    object Image1: TImage
+      Cursor = crCross
+      Left = 0
+      Height = 120
+      Top = 0
+      Width = 136
+      AutoSize = True
+      Enabled = False
+      OnMouseMove = Image1MouseMove
+    end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 29
+    Top = 1032
+    Width = 1247
+    Panels = <    
+      item
+        Text = 'X,Y'
+        Width = 50
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Text = 'RGB'
+        Width = 50
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Text = 'Tamaño'
+        Width = 60
+      end    
+      item
+        Width = 90
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Width = 50
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object MainMenu1: TMainMenu
+    Left = 792
+    Top = 120
+    object MenuItem1: TMenuItem
+      Caption = 'Archivo'
+      object MenuItem2: TMenuItem
+        Caption = 'Abrir Imagen Canvas'
+        Enabled = False
+        OnClick = MenuItem2Click
+      end
+      object MenuItem4: TMenuItem
+        Caption = 'Abrir Scanline'
+        OnClick = MenuItem4Click
+      end
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Filtros'
+      object MenuItem5: TMenuItem
+        Caption = 'Negativo'
+        OnClick = MenuItem5Click
+      end
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'Modelo de Color'
+      object MenuItem7: TMenuItem
+        Caption = 'CIE XYZ'
+        OnClick = MenuItem7Click
+      end
+    end
+    object MenuItem8: TMenuItem
+      Caption = 'Herramientas'
+      object MenuItem9: TMenuItem
+        Caption = 'Histograma'
+        OnClick = MenuItem9Click
+      end
+    end
+  end
+  object OpenPictureDialog1: TOpenPictureDialog
+    FileName = 'C:\Users\R2ro-ThinkPad\Desktop\3-AccesoImagen'
+    Filter = 'BMPs (*.bmp)|*.bmp'
+    InitialDir = 'C:\Users\R2ro-ThinkPad\Desktop\'
+    Left = 792
+    Top = 48
+  end
+end
