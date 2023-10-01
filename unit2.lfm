@@ -1,26 +1,33 @@
 object Form2: TForm2
-  Left = 665
-  Height = 525
-  Top = 306
-  Width = 894
+  Left = 388
+  Height = 396
+  Top = 262
+  Width = 750
   Caption = 'Form2'
-  ClientHeight = 525
-  ClientWidth = 894
+  ClientHeight = 396
+  ClientWidth = 750
   DesignTimePPI = 120
   LCLVersion = '2.2.6.0'
   object Chart1: TChart
-    Left = 24
-    Height = 472
-    Top = 24
-    Width = 831
+    Left = 0
+    Height = 384
+    Top = 0
+    Width = 744
     AxisList = <    
       item
+        Grid.Style = psinsideFrame
+        Intervals.NiceSteps = '0|5|10'
         Marks.LabelBrush.Style = bsClear
         Minors = <>
         Title.LabelFont.Orientation = 900
         Title.LabelBrush.Style = bsClear
       end    
       item
+        Grid.Visible = False
+        Intervals.Count = 10
+        Intervals.MaxLength = 255
+        Intervals.MinLength = 0
+        Intervals.NiceSteps = '0|51|255'
         Alignment = calBottom
         Marks.LabelBrush.Style = bsClear
         Minors = <>
@@ -29,5 +36,17 @@ object Form2: TForm2
     Title.Text.Strings = (
       'TAChart'
     )
+    object Chart1LineSeries1: TLineSeries
+      LinePen.Color = clRed
+      LinePen.Width = 2
+    end
+    object Chart1LineSeries2: TLineSeries
+      LinePen.Color = clGreen
+      LinePen.Width = 2
+    end
+    object Chart1LineSeries3: TLineSeries
+      LinePen.Color = clBlue
+      LinePen.Width = 2
+    end
   end
 end

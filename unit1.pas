@@ -54,7 +54,10 @@ type
 
     //linearizacion de valores del modelo XYZ
     procedure linearize(var Value: double);
-    
+
+    //procedimiento para generar histograma
+    procedure histograma(M: MATRGB);
+
   end;
 
 var
@@ -87,7 +90,6 @@ begin
 
     SetLength(MAT, ALTO, ANCHO, 3);     //especificar dimensiones de la matriz RGB
     copiaIM(ALTO, ANCHO, MAT); //copiar valores RGB a la MAtriz
-
   end;
 
 end;
@@ -110,6 +112,7 @@ begin
     SetLength(MAT, ALTO, ANCHO, 3);
     copBM(ALTO, ANCHO, MAT, BMAP);
     Image1.Picture.Assign(BMAP);  //visulaizar imagen
+    histograma(MAT);
   end;
 
 end;
@@ -151,12 +154,12 @@ begin
   end;
 end;
 
-
+//cambio a modelo xyz
 procedure TForm1.MenuItem7Click(Sender: TObject);
 var
   i, j: integer;
-  r, g, b, x, y, z, rga, gga, bga: double;
-  k: byte;
+  r, g, b, x, y, z: double;
+  //k: byte;
 begin
   //cambio de modelo de color
   for i := 0 to ALTO - 1 do
@@ -199,12 +202,13 @@ begin
   copMB(ALTO, ANCHO, MAT, BMAP);
   //visualizar resultado
   Image1.Picture.Assign(BMAP);
+  histograma(MAT);
 end;
 
 //histograma
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
-
+  histograma(MAT);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -297,6 +301,12 @@ begin
 
     end; //j
   end; //i
+end;
+
+procedure TForm1.histograma(M: MATRGB);
+begin
+  Unit2.Form2.DrawHistogramm(M, ANCHO, ALTO);
+  Unit2.Form2.Show;
 end;
 
 end.
