@@ -99,6 +99,10 @@ object Form1: TForm1
         Caption = 'Negativo'
         OnClick = MenuItem5Click
       end
+      object FiltroGrises: TMenuItem
+        Caption = 'Grises'
+        OnClick = FiltroGrisesClick
+      end
     end
     object MenuItem6: TMenuItem
       Caption = 'Modelo de Color'

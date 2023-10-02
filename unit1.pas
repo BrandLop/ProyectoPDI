@@ -21,6 +21,7 @@ type
     Image1: TImage;
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
+    FiltroGrises: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -32,6 +33,7 @@ type
     OpenPictureDialog1: TOpenPictureDialog;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
+    procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure MenuItem2Click(Sender: TObject);
@@ -57,6 +59,8 @@ type
 
     //procedimiento para generar histograma
     procedure histograma(M: MATRGB);
+
+    procedure escala_de_grises();
 
   end;
 
@@ -133,10 +137,9 @@ begin
       end;  //k
     end;    //j
   end; //i
-
   copMB(ALTO, ANCHO, MAT, BMAP);
-  //visualizar resultado
   Image1.Picture.Assign(BMAP);
+  histograma(MAT);
 end;
 
 procedure TForm1.linearize(var Value: double);
@@ -159,7 +162,6 @@ procedure TForm1.MenuItem7Click(Sender: TObject);
 var
   i, j: integer;
   r, g, b, x, y, z: double;
-  //k: byte;
 begin
   //cambio de modelo de color
   for i := 0 to ALTO - 1 do
@@ -170,24 +172,14 @@ begin
       r := MAT[i, j, 0] / 255;
       g := MAT[i, j, 1] / 255;
       b := MAT[i, j, 2] / 255;
-
       //linearizacion de los canales
       linearize(r);
       linearize(g);
       linearize(b);
-
       //Conversion rgb a xyz
       X := R * 0.412453 + G * 0.357580 + B * 0.180423;
       Y := R * 0.212671 + G * 0.715160 + B * 0.072169;
       Z := R * 0.019334 + G * 0.119193 + B * 0.950227;
-
-      //X := rga * 0.412453 + gga * 0.357580 + bga * 0.180423;
-      //Y := rga * 0.212671 + gga * 0.715160 + bga * 0.072169;
-      //Z := rga * 0.019334 + gga * 0.119193 + bga * 0.950227;
-      //Normalizar los valores con mix max
-      //X := (X - 0)/(255 - 0);
-      //Y := (Y - 0)/(255 - 0);
-      //Z := (Z - 0)/(255 - 0);
       //Normalizar los valores
       X := X * 255;
       Y := Y * 255;
@@ -213,9 +205,33 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-
   BMAP := TBitmap.Create;  //crear el objeto BMAP
+end;
 
+procedure TForm1.escala_de_grises();
+var
+  i, j: integer;
+  k: byte;
+begin
+  //filtro escala de grises, promedio de los valores de los canales R=G=B
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      k := (MAT[i, j, 0] + MAT[i, j, 1] + MAT[i, j, 2]) div 3;
+      MAT[i, j, 0] := k;
+      MAT[i, j, 1] := k;
+      MAT[i, j, 2] := k;
+    end;
+  end;
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
+end;
+
+procedure TForm1.FiltroGrisesClick(Sender: TObject);
+begin
+  escala_de_grises();
 end;
 
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
@@ -298,7 +314,6 @@ begin
       P[k + 2] := MAT[i, j, 0];
       P[k + 1] := MAT[i, j, 1];
       P[k] := MAT[i, j, 2];
-
     end; //j
   end; //i
 end;
