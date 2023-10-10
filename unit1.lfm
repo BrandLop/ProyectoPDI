@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 323
+  Left = 2678
   Height = 1086
-  Top = 59
-  Width = 1247
+  Top = 25
+  Width = 1246
   Caption = 'Form1'
   ClientHeight = 1061
-  ClientWidth = 1247
+  ClientWidth = 1246
   DesignTimePPI = 120
   Menu = MainMenu1
   OnCreate = FormCreate
@@ -35,7 +35,7 @@ object Form1: TForm1
     Left = 0
     Height = 29
     Top = 1032
-    Width = 1247
+    Width = 1246
     Panels = <    
       item
         Text = 'X,Y'
@@ -102,6 +102,10 @@ object Form1: TForm1
       object FiltroGrises: TMenuItem
         Caption = 'Grises'
         OnClick = FiltroGrisesClick
+      end
+      object binarizacion: TMenuItem
+        Caption = 'BinarizaciónD'
+        OnClick = binarizacionClick
       end
     end
     object MenuItem6: TMenuItem

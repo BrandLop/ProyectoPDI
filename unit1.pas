@@ -22,6 +22,7 @@ type
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
     FiltroGrises: TMenuItem;
+    binarizacion: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -36,6 +37,7 @@ type
     procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure binarizacionClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -61,6 +63,8 @@ type
     procedure histograma(M: MATRGB);
 
     procedure escala_de_grises();
+
+    procedure binarizacionDi();
 
   end;
 
@@ -224,14 +228,61 @@ begin
       MAT[i, j, 2] := k;
     end;
   end;
-  copMB(ALTO, ANCHO, MAT, BMAP);
-  Image1.Picture.Assign(BMAP);
-  histograma(MAT);
+end;
+
+procedure TForm1.binarizacionDi();
+var
+  sumatoria, threshold, i, j, k, l, rsize, pixels: integer;
+const
+  m = 300;
+begin
+  i := 0;
+  while i <= ALTO - 1 do
+  begin
+    j := 0;
+    while j <= ALTO - 1 do
+    begin
+      sumatoria := 0;
+      Rsize := 0;
+      for k := i to Min(i + m - 1, ALTO - 1) do
+      begin
+        for l := j to Min(j + m - 1, ALTO - 1) do
+        begin
+          sumatoria := sumatoria + MAT[k, l, 0];
+          Rsize := Rsize + 1;
+        end;
+      end;
+      threshold := sumatoria div Rsize;
+      for k := i to Min(i + m - 1, ALTO - 1) do
+      begin
+        for l := j to Min(j + m - 1, ALTO - 1) do
+        begin
+          if MAT[k, l, 0] > threshold then
+          begin
+            MAT[k, l, 0] := 255;
+            MAT[k, l, 1] := 255;
+            MAT[k, l, 2] := 255;
+          end
+          else
+          begin
+            MAT[k, l, 0] := 0;
+            MAT[k, l, 1] := 0;
+            MAT[k, l, 2] := 0;
+          end;
+        end;
+      end;
+      j := j + m;
+    end;
+    i := i + m;
+  end;
 end;
 
 procedure TForm1.FiltroGrisesClick(Sender: TObject);
 begin
   escala_de_grises();
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
 end;
 
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
@@ -244,6 +295,22 @@ begin
   StatusBar1.Panels[5].Text := IntToStr(MAT[y, x, 1]);
   StatusBar1.Panels[6].Text := IntToStr(MAT[y, x, 2]);
 
+end;
+
+procedure TForm1.binarizacionClick(Sender: TObject);
+begin
+  if ALTO = ANCHO then
+  begin
+    escala_de_grises();
+    binarizacionDi();
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    histograma(MAT);
+  end
+  else
+  begin
+    ShowMessage('La imagen no tiene las mismas dimensiones en alto y ancho :(');
+  end;
 end;
 
 procedure Tform1.copiaIM(al, an: integer; var M: MATRGB);
