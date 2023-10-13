@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-  ExtDlgs, LCLIntf, ComCtrls, Math, Unit2;
+  ExtDlgs, LCLIntf, ComCtrls, Math, Unit2, Unit3;
 
 type
 
@@ -73,7 +73,6 @@ var
   Form1: TForm1;
   ALTO, ANCHO: integer; //dimensiones de la imagen
   MAT: MATRGB;
-
   BMAP: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
 
 implementation
@@ -232,10 +231,9 @@ end;
 
 procedure TForm1.binarizacionDi();
 var
-  sumatoria, threshold, i, j, k, l, rsize, pixels: integer;
-const
-  m = 300;
+  sumatoria, threshold, i, j, k, l, rsize, pixels, m: integer;
 begin
+  m:= Form3.rsize;
   i := 0;
   while i <= ALTO - 1 do
   begin
@@ -301,11 +299,17 @@ procedure TForm1.binarizacionClick(Sender: TObject);
 begin
   if ALTO = ANCHO then
   begin
-    escala_de_grises();
-    binarizacionDi();
-    copMB(ALTO, ANCHO, MAT, BMAP);
-    Image1.Picture.Assign(BMAP);
-    histograma(MAT);
+    Form3.TrackBar1.Min:=3;
+    Form3.TrackBar1.Max:=ALTO;
+    Form3.ShowModal;
+    if Form3.ModalResult = mrOK then
+    begin
+      escala_de_grises();
+      binarizacionDi();
+      copMB(ALTO, ANCHO, MAT, BMAP);
+      Image1.Picture.Assign(BMAP);
+      histograma(MAT);
+    end;
   end
   else
   begin
