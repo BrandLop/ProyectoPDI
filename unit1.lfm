@@ -120,6 +120,10 @@ object Form1: TForm1
         Caption = 'Histograma'
         OnClick = MenuItem9Click
       end
+      object Restaurar: TMenuItem
+        Caption = 'Restaurar Imágen'
+        OnClick = RestaurarClick
+      end
     end
   end
   object OpenPictureDialog1: TOpenPictureDialog

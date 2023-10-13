@@ -23,6 +23,7 @@ type
     MenuItem1: TMenuItem;
     FiltroGrises: TMenuItem;
     binarizacion: TMenuItem;
+    Restaurar: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
@@ -43,6 +44,7 @@ type
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure RestaurarClick(Sender: TObject);
   private
 
   public
@@ -74,6 +76,7 @@ var
   ALTO, ANCHO: integer; //dimensiones de la imagen
   MAT: MATRGB;
   BMAP: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
+  pathFile: String;
 
 implementation
 
@@ -106,7 +109,8 @@ begin
   if OpenPictureDialog1.Execute then
   begin
     Image1.Enabled := True;
-    BMAP.LoadFromFile(OpenPictureDialog1.FileName);
+    pathFile:= OpenPictureDialog1.FileName;
+    BMAP.LoadFromFile(pathFile);
     ALTO := BMAP.Height;
     ANCHO := BMAP.Width;
 
@@ -203,6 +207,24 @@ end;
 //histograma
 procedure TForm1.MenuItem9Click(Sender: TObject);
 begin
+  histograma(MAT);
+end;
+
+procedure TForm1.RestaurarClick(Sender: TObject);
+begin
+  BMAP.LoadFromFile(pathFile);
+  ALTO := BMAP.Height;
+  ANCHO := BMAP.Width;
+
+  if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
+  begin
+    BMAP.PixelFormat := pf24bit;
+  end;
+
+  StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
+  SetLength(MAT, ALTO, ANCHO, 3);
+  copBM(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);  //visulaizar imagen
   histograma(MAT);
 end;
 
