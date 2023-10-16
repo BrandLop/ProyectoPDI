@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 254
+  Left = 1719
   Height = 732
-  Top = 73
+  Top = 0
   Width = 997
   Caption = 'Form1'
   ClientHeight = 707
@@ -105,6 +105,10 @@ object Form1: TForm1
       object binarizacion: TMenuItem
         Caption = 'BinarizaciónD'
         OnClick = binarizacionClick
+      end
+      object Gamma: TMenuItem
+        Caption = 'Gamma'
+        OnClick = GammaClick
       end
     end
     object MenuItem6: TMenuItem

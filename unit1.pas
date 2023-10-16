@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-  ExtDlgs, LCLIntf, ComCtrls, Math, Unit2, Unit3;
+  ExtDlgs, LCLIntf, ComCtrls, StdCtrls, Math, Unit2, Unit3, Unit4;
 
 type
 
@@ -23,6 +23,7 @@ type
     MenuItem1: TMenuItem;
     FiltroGrises: TMenuItem;
     binarizacion: TMenuItem;
+    Gamma: TMenuItem;
     Restaurar: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -37,6 +38,7 @@ type
     StatusBar1: TStatusBar;
     procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure GammaClick(Sender: TObject);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure binarizacionClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
@@ -67,6 +69,8 @@ type
     procedure escala_de_grises();
 
     procedure binarizacionDi();
+
+    procedure gammaFilter(gamaval: Double);
 
   end;
 
@@ -233,6 +237,18 @@ begin
   BMAP := TBitmap.Create;  //crear el objeto BMAP
 end;
 
+procedure TForm1.GammaClick(Sender: TObject);
+begin
+  Form4.ShowModal;
+  if Form4.ModalResult = mrOK then
+  begin
+    gammaFilter(Form4.gamval);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    histograma(MAT);
+  end;
+end;
+
 procedure TForm1.escala_de_grises();
 var
   i, j: integer;
@@ -294,6 +310,24 @@ begin
       j := j + m;
     end;
     i := i + m;
+  end;
+end;
+
+procedure TForm1.gammaFilter(gamaval: Double);
+var
+  i, j, k: Integer;
+  res: Double;
+begin
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        res := Power((MAT[i,j,k]/255),gamaval) * 255;  
+        MAT[i,j,k] := Round(res);
+      end;
+    end;
   end;
 end;
 
