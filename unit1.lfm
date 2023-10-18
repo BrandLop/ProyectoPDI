@@ -1,5 +1,5 @@
 object Form1: TForm1
-  Left = 1719
+  Left = 1800
   Height = 732
   Top = 0
   Width = 997
@@ -109,6 +109,10 @@ object Form1: TForm1
       object Gamma: TMenuItem
         Caption = 'Gamma'
         OnClick = GammaClick
+      end
+      object Tanhip: TMenuItem
+        Caption = 'Tanhip'
+        OnClick = TanhipClick
       end
     end
     object MenuItem6: TMenuItem

@@ -24,6 +24,7 @@ type
     FiltroGrises: TMenuItem;
     binarizacion: TMenuItem;
     Gamma: TMenuItem;
+    Tanhip: TMenuItem;
     Restaurar: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
@@ -47,6 +48,7 @@ type
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
+    procedure TanhipClick(Sender: TObject);
   private
 
   public
@@ -72,6 +74,7 @@ type
 
     procedure gammaFilter(gamaval: Double);
 
+    procedure tanhyper(alphaval: Double);
   end;
 
 var
@@ -230,6 +233,38 @@ begin
   copBM(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);  //visulaizar imagen
   histograma(MAT);
+end;
+
+procedure TForm1.tanhyper(alphaval: Double);
+var
+  i, j : Integer;
+  k : Byte;
+  value: Double;
+begin
+  for i := 0 to ALTO-1 do
+  begin
+    for j := 0 to ANCHO-1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        value := 255/2*(1+TanH(alphaval*(MAT[i,j,k]-(255/2))));
+        MAT[i,j,k] := Round(value);
+      end;
+    end;
+  end;
+end;
+
+procedure TForm1.TanhipClick(Sender: TObject);
+begin
+  Form4.ComboBox1.Text:='Valor de alfa';
+  Form4.ShowModal;
+  if Form4.ModalResult = mrOK then
+  begin
+    tanhyper(Form4.gamval);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    histograma(MAT);
+  end;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
