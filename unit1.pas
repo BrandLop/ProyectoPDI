@@ -24,6 +24,10 @@ type
     FiltroGrises: TMenuItem;
     binarizacion: TMenuItem;
     Gamma: TMenuItem;
+    Izq: TMenuItem;
+    Der: TMenuItem;
+    Rotar: TMenuItem;
+    Transformar: TMenuItem;
     Tanhip: TMenuItem;
     Restaurar: TMenuItem;
     MenuItem2: TMenuItem;
@@ -37,11 +41,13 @@ type
     OpenPictureDialog1: TOpenPictureDialog;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
+    procedure DerClick(Sender: TObject);
     procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GammaClick(Sender: TObject);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure binarizacionClick(Sender: TObject);
+    procedure IzqClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem4Click(Sender: TObject);
     procedure MenuItem5Click(Sender: TObject);
@@ -75,15 +81,21 @@ type
     procedure gammaFilter(gamaval: Double);
 
     procedure tanhyper(alphaval: Double);
+
+    procedure copMAM(var OriMAT: MATRGB; var AuxiMAT: MATRGB);
+
+    procedure RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB; AngleDegrees: Double);
   end;
 
 var
   HistR, HistG, HistB: array[0..255] of integer;
   Form1: TForm1;
-  ALTO, ANCHO: integer; //dimensiones de la imagen
-  MAT: MATRGB;
+  ALTO, ANCHO, NewAncho, NewAlto: integer; //dimensiones de la imagen
+  MAT, AuxMAT: MATRGB;
   BMAP: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
   pathFile: String;
+  counter: ShortInt = 0;
+  grades: Double = 0.0;
 
 implementation
 
@@ -228,6 +240,8 @@ begin
     BMAP.PixelFormat := pf24bit;
   end;
 
+  counter:=0;
+  grades:=0.0;
   StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
   SetLength(MAT, ALTO, ANCHO, 3);
   copBM(ALTO, ANCHO, MAT, BMAP);
@@ -304,7 +318,7 @@ end;
 
 procedure TForm1.binarizacionDi();
 var
-  sumatoria, threshold, i, j, k, l, rsize, pixels, m: integer;
+  sumatoria, threshold, i, j, k, l, rsize, m: integer;
 begin
   m:= Form3.rsize;
   i := 0;
@@ -374,6 +388,86 @@ begin
   histograma(MAT);
 end;
 
+procedure TForm1.copMAM(var OriMAT: MATRGB; var AuxiMAT: MATRGB);
+var
+  i,j,k: Integer;
+begin
+  SetLength(OriMAT, 0, 0, 0);
+  ALTO:= NewAlto;
+  ANCHO:= NewAncho;
+  SetLength(OriMAT, ALTO, ANCHO, 3);
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        OriMAT[i, j, k] := AuxiMAT[i, j, k];
+      end;
+    end;
+  end;
+end;
+
+procedure TForm1.RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB; AngleDegrees: Double);
+var
+  centerX, centerY, newX, newY: Integer;
+  i, j, k: Integer;
+  cosine, sine: Double;
+begin
+  AngleDegrees := AngleDegrees * (PI / 180); // Convert degrees to radians
+  cosine := Cos(AngleDegrees);
+  sine := Sin(AngleDegrees);
+
+  NewAncho := Round(Abs(ANCHO * cosine) + Abs(ALTO * sine));
+  NewAlto := Round(Abs(ANCHO * sine) + Abs(ALTO * cosine));
+  SetLength(RotatedMAT, NewAlto, NewAncho, 3);
+
+  centerX := ANCHO div 2;
+  centerY := ALTO div 2;
+
+  BMAP.Width:=NewAncho;
+  BMAP.Height:=NewAlto;
+
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        newX := Round((j - centerX) * cosine - (i - centerY) * sine) + NewAncho div 2;
+        newY := Round((j - centerX) * sine + (i - centerY) * cosine) + NewAlto div 2;
+
+        if (newX >= 0) and (newX < NewAncho) and (newY >= 0) and (newY < NewAlto) then
+        begin
+          RotatedMAT[newY, newX, k] := OriginalMAT[i, j, k];
+        end;
+      end;
+    end;
+  end;
+end;
+
+
+procedure TForm1.DerClick(Sender: TObject);
+begin
+    if counter <= 3 then
+    begin
+      SetLength(AuxMAT, 0, 0, 0);
+      grades:= 90.0;
+      RotateImage(MAT, AuxMAT, grades);
+      copMAM(MAT,AuxMAT);
+      copMB(ALTO, ANCHO, MAT, BMAP);
+      Image1.Picture.Assign(BMAP);
+      if counter = 3 then
+      begin
+        grades:= 0.0;
+        counter:= -1;
+      end;
+    end;
+  counter:= counter + 1;
+  ShowMessage(IntToStr(counter));
+  ShowMessage(FloatToStr(grades));
+end;
+
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 begin
   //al mover el mouse, indica las coordenadas X Y
@@ -406,6 +500,27 @@ begin
   begin
     ShowMessage('La imagen no tiene las mismas dimensiones en alto y ancho :(');
   end;
+end;
+
+procedure TForm1.IzqClick(Sender: TObject);
+begin
+    if counter >= -3 then
+    begin
+      SetLength(AuxMAT, 0, 0, 0);
+      grades:= -90.0;
+      RotateImage(MAT, AuxMAT, grades);
+      copMAM(MAT,AuxMAT);
+      copMB(ALTO, ANCHO, MAT, BMAP);
+      Image1.Picture.Assign(BMAP);
+      if counter = -3 then
+      begin
+        grades:= 0.0;
+        counter:= 1;
+      end;
+    end;
+  counter:= counter - 1;
+  ShowMessage(IntToStr(counter));
+  ShowMessage(FloatToStr(grades));
 end;
 
 procedure Tform1.copiaIM(al, an: integer; var M: MATRGB);
@@ -463,6 +578,8 @@ var
   i, j, k: integer;
   P: Pbyte;
 begin
+  B.Width := an; // Establece el ancho del TBitmap
+  B.Height := al; // Establece la altura del TBitmap
   for i := 0 to al - 1 do
   begin
     B.BeginUpdate;
@@ -473,9 +590,9 @@ begin
     for j := 0 to an - 1 do
     begin             //asignando valores de matriz al apuntador scanline--> Bitmap
       k := 3 * j;
-      P[k + 2] := MAT[i, j, 0];
-      P[k + 1] := MAT[i, j, 1];
-      P[k] := MAT[i, j, 2];
+      P[k + 2] := M[i, j, 0];
+      P[k + 1] := M[i, j, 1];
+      P[k] := M[i, j, 2];
     end; //j
   end; //i
 end;

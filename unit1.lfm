@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 1800
+  Left = 394
   Height = 732
-  Top = 0
+  Top = 108
   Width = 997
   Caption = 'Form1'
   ClientHeight = 707
@@ -131,6 +131,20 @@ object Form1: TForm1
       object Restaurar: TMenuItem
         Caption = 'Restaurar Imágen'
         OnClick = RestaurarClick
+      end
+    end
+    object Transformar: TMenuItem
+      Caption = 'Transformar'
+      object Rotar: TMenuItem
+        Caption = 'Rotar'
+        object Izq: TMenuItem
+          Caption = 'Izq'
+          OnClick = IzqClick
+        end
+        object Der: TMenuItem
+          Caption = 'Der'
+          OnClick = DerClick
+        end
       end
     end
   end
