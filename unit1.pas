@@ -78,13 +78,14 @@ type
 
     procedure binarizacionDi();
 
-    procedure gammaFilter(gamaval: Double);
+    procedure gammaFilter(gamaval: double);
 
-    procedure tanhyper(alphaval: Double);
+    procedure tanhyper(alphaval: double);
 
     procedure copMAM(var OriMAT: MATRGB; var AuxiMAT: MATRGB);
 
-    procedure RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB; AngleDegrees: Double);
+    procedure RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB;
+      AngleDegrees: double);
   end;
 
 var
@@ -93,9 +94,9 @@ var
   ALTO, ANCHO, NewAncho, NewAlto: integer; //dimensiones de la imagen
   MAT, AuxMAT: MATRGB;
   BMAP: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
-  pathFile: String;
-  counter: ShortInt = 0;
-  grades: Double = 0.0;
+  pathFile: string;
+  counter: shortint = 0;
+  grades: double = 0.0;
 
 implementation
 
@@ -128,7 +129,7 @@ begin
   if OpenPictureDialog1.Execute then
   begin
     Image1.Enabled := True;
-    pathFile:= OpenPictureDialog1.FileName;
+    pathFile := OpenPictureDialog1.FileName;
     BMAP.LoadFromFile(pathFile);
     ALTO := BMAP.Height;
     ANCHO := BMAP.Width;
@@ -240,8 +241,8 @@ begin
     BMAP.PixelFormat := pf24bit;
   end;
 
-  counter:=0;
-  grades:=0.0;
+  counter := 0;
+  grades := 0.0;
   StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
   SetLength(MAT, ALTO, ANCHO, 3);
   copBM(ALTO, ANCHO, MAT, BMAP);
@@ -249,20 +250,20 @@ begin
   histograma(MAT);
 end;
 
-procedure TForm1.tanhyper(alphaval: Double);
+procedure TForm1.tanhyper(alphaval: double);
 var
-  i, j : Integer;
-  k : Byte;
-  value: Double;
+  i, j: integer;
+  k: byte;
+  Value: double;
 begin
-  for i := 0 to ALTO-1 do
+  for i := 0 to ALTO - 1 do
   begin
-    for j := 0 to ANCHO-1 do
+    for j := 0 to ANCHO - 1 do
     begin
       for k := 0 to 2 do
       begin
-        value := 255/2*(1+TanH(alphaval*(MAT[i,j,k]-(255/2))));
-        MAT[i,j,k] := Round(value);
+        Value := 255 / 2 * (1 + TanH(alphaval * (MAT[i, j, k] - (255 / 2))));
+        MAT[i, j, k] := Round(Value);
       end;
     end;
   end;
@@ -270,9 +271,9 @@ end;
 
 procedure TForm1.TanhipClick(Sender: TObject);
 begin
-  Form4.ComboBox1.Text:='Valor de alfa';
+  Form4.ComboBox1.Text := 'Valor de alfa';
   Form4.ShowModal;
-  if Form4.ModalResult = mrOK then
+  if Form4.ModalResult = mrOk then
   begin
     tanhyper(Form4.gamval);
     copMB(ALTO, ANCHO, MAT, BMAP);
@@ -289,7 +290,7 @@ end;
 procedure TForm1.GammaClick(Sender: TObject);
 begin
   Form4.ShowModal;
-  if Form4.ModalResult = mrOK then
+  if Form4.ModalResult = mrOk then
   begin
     gammaFilter(Form4.gamval);
     copMB(ALTO, ANCHO, MAT, BMAP);
@@ -320,7 +321,7 @@ procedure TForm1.binarizacionDi();
 var
   sumatoria, threshold, i, j, k, l, rsize, m: integer;
 begin
-  m:= Form3.rsize;
+  m := Form3.rsize;
   i := 0;
   while i <= ALTO - 1 do
   begin
@@ -362,10 +363,10 @@ begin
   end;
 end;
 
-procedure TForm1.gammaFilter(gamaval: Double);
+procedure TForm1.gammaFilter(gamaval: double);
 var
-  i, j, k: Integer;
-  res: Double;
+  i, j, k: integer;
+  res: double;
 begin
   for i := 0 to ALTO - 1 do
   begin
@@ -373,8 +374,8 @@ begin
     begin
       for k := 0 to 2 do
       begin
-        res := Power((MAT[i,j,k]/255),gamaval) * 255;  
-        MAT[i,j,k] := Round(res);
+        res := Power((MAT[i, j, k] / 255), gamaval) * 255;
+        MAT[i, j, k] := Round(res);
       end;
     end;
   end;
@@ -390,11 +391,11 @@ end;
 
 procedure TForm1.copMAM(var OriMAT: MATRGB; var AuxiMAT: MATRGB);
 var
-  i,j,k: Integer;
+  i, j, k: integer;
 begin
   SetLength(OriMAT, 0, 0, 0);
-  ALTO:= NewAlto;
-  ANCHO:= NewAncho;
+  ALTO := NewAlto;
+  ANCHO := NewAncho;
   SetLength(OriMAT, ALTO, ANCHO, 3);
   for i := 0 to ALTO - 1 do
   begin
@@ -408,11 +409,12 @@ begin
   end;
 end;
 
-procedure TForm1.RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB; AngleDegrees: Double);
+procedure TForm1.RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB;
+  AngleDegrees: double);
 var
-  centerX, centerY, newX, newY: Integer;
-  i, j, k: Integer;
-  cosine, sine: Double;
+  centerX, centerY, newX, newY: integer;
+  i, j, k: integer;
+  cosine, sine: double;
 begin
   AngleDegrees := AngleDegrees * (PI / 180); // Convert degrees to radians
   cosine := Cos(AngleDegrees);
@@ -425,8 +427,8 @@ begin
   centerX := ANCHO div 2;
   centerY := ALTO div 2;
 
-  BMAP.Width:=NewAncho;
-  BMAP.Height:=NewAlto;
+  BMAP.Width := NewAncho;
+  BMAP.Height := NewAlto;
 
   for i := 0 to ALTO - 1 do
   begin
@@ -449,21 +451,21 @@ end;
 
 procedure TForm1.DerClick(Sender: TObject);
 begin
-    if counter <= 3 then
+  if counter <= 3 then
+  begin
+    SetLength(AuxMAT, 0, 0, 0);
+    grades := 90.0;
+    RotateImage(MAT, AuxMAT, grades);
+    copMAM(MAT, AuxMAT);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    if counter = 3 then
     begin
-      SetLength(AuxMAT, 0, 0, 0);
-      grades:= 90.0;
-      RotateImage(MAT, AuxMAT, grades);
-      copMAM(MAT,AuxMAT);
-      copMB(ALTO, ANCHO, MAT, BMAP);
-      Image1.Picture.Assign(BMAP);
-      if counter = 3 then
-      begin
-        grades:= 0.0;
-        counter:= -1;
-      end;
+      grades := 0.0;
+      counter := -1;
     end;
-  counter:= counter + 1;
+  end;
+  counter := counter + 1;
   ShowMessage(IntToStr(counter));
   ShowMessage(FloatToStr(grades));
 end;
@@ -484,10 +486,10 @@ procedure TForm1.binarizacionClick(Sender: TObject);
 begin
   if ALTO = ANCHO then
   begin
-    Form3.TrackBar1.Min:=3;
-    Form3.TrackBar1.Max:=ALTO;
+    Form3.TrackBar1.Min := 3;
+    Form3.TrackBar1.Max := ALTO;
     Form3.ShowModal;
-    if Form3.ModalResult = mrOK then
+    if Form3.ModalResult = mrOk then
     begin
       escala_de_grises();
       binarizacionDi();
@@ -504,21 +506,21 @@ end;
 
 procedure TForm1.IzqClick(Sender: TObject);
 begin
-    if counter >= -3 then
+  if counter >= -3 then
+  begin
+    SetLength(AuxMAT, 0, 0, 0);
+    grades := -90.0;
+    RotateImage(MAT, AuxMAT, grades);
+    copMAM(MAT, AuxMAT);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    if counter = -3 then
     begin
-      SetLength(AuxMAT, 0, 0, 0);
-      grades:= -90.0;
-      RotateImage(MAT, AuxMAT, grades);
-      copMAM(MAT,AuxMAT);
-      copMB(ALTO, ANCHO, MAT, BMAP);
-      Image1.Picture.Assign(BMAP);
-      if counter = -3 then
-      begin
-        grades:= 0.0;
-        counter:= 1;
-      end;
+      grades := 0.0;
+      counter := 1;
     end;
-  counter:= counter - 1;
+  end;
+  counter := counter - 1;
   ShowMessage(IntToStr(counter));
   ShowMessage(FloatToStr(grades));
 end;
