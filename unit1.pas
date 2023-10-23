@@ -26,6 +26,7 @@ type
     Gamma: TMenuItem;
     Izq: TMenuItem;
     Der: TMenuItem;
+    Reflexion: TMenuItem;
     Rotar: TMenuItem;
     Transformar: TMenuItem;
     Tanhip: TMenuItem;
@@ -53,6 +54,7 @@ type
     procedure MenuItem5Click(Sender: TObject);
     procedure MenuItem7Click(Sender: TObject);
     procedure MenuItem9Click(Sender: TObject);
+    procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
   private
@@ -230,6 +232,38 @@ begin
   histograma(MAT);
 end;
 
+procedure TForm1.ReflexionClick(Sender: TObject);
+var
+  i,j,k, midpoin, value, auxval: Integer;
+begin
+  copMAM(AuxMAT, MAT);
+  midpoin := ANCHO div 2;
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to midpoin - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        MAT[i,(midpoin - 1 - j),k] := AuxMAT[i,j,k];
+      end;
+    end;
+  end;
+  for i := 0 to ALTO - 1 do
+  begin
+    auxval:=0;
+    for j := midpoin to ANCHO - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        MAT[i,(ANCHO - 1 - auxval),k] := AuxMAT[i,j,k];
+      end;
+      auxval:=auxval + 1;
+    end;
+  end;
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+end;
+
 procedure TForm1.RestaurarClick(Sender: TObject);
 begin
   BMAP.LoadFromFile(pathFile);
@@ -394,8 +428,8 @@ var
   i, j, k: integer;
 begin
   SetLength(OriMAT, 0, 0, 0);
-  ALTO := NewAlto;
-  ANCHO := NewAncho;
+  ALTO := Length(AuxiMAT);
+  ANCHO := Length(AuxiMAT[0]);
   SetLength(OriMAT, ALTO, ANCHO, 3);
   for i := 0 to ALTO - 1 do
   begin
@@ -466,8 +500,6 @@ begin
     end;
   end;
   counter := counter + 1;
-  ShowMessage(IntToStr(counter));
-  ShowMessage(FloatToStr(grades));
 end;
 
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
@@ -521,8 +553,6 @@ begin
     end;
   end;
   counter := counter - 1;
-  ShowMessage(IntToStr(counter));
-  ShowMessage(FloatToStr(grades));
 end;
 
 procedure Tform1.copiaIM(al, an: integer; var M: MATRGB);

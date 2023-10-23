@@ -4,7 +4,7 @@ object Form1: TForm1
   Top = 108
   Width = 997
   Caption = 'Form1'
-  ClientHeight = 707
+  ClientHeight = 705
   ClientWidth = 997
   Menu = MainMenu1
   OnCreate = FormCreate
@@ -32,8 +32,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 19
-    Top = 688
+    Height = 21
+    Top = 684
     Width = 997
     Panels = <    
       item
@@ -145,6 +145,10 @@ object Form1: TForm1
           Caption = 'Der'
           OnClick = DerClick
         end
+      end
+      object Reflexion: TMenuItem
+        Caption = 'Reflexion'
+        OnClick = ReflexionClick
       end
     end
   end
