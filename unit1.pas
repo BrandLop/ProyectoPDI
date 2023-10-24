@@ -33,12 +33,12 @@ type
     Restaurar: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
-    MenuItem4: TMenuItem;
-    MenuItem5: TMenuItem;
+    Abrir_Scanline: TMenuItem;
+    FiltroNegativo: TMenuItem;
     MenuItem6: TMenuItem;
-    MenuItem7: TMenuItem;
+    colorxyz: TMenuItem;
     MenuItem8: TMenuItem;
-    MenuItem9: TMenuItem;
+    Histogramaa: TMenuItem;
     OpenPictureDialog1: TOpenPictureDialog;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
@@ -50,10 +50,10 @@ type
     procedure binarizacionClick(Sender: TObject);
     procedure IzqClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
-    procedure MenuItem4Click(Sender: TObject);
-    procedure MenuItem5Click(Sender: TObject);
-    procedure MenuItem7Click(Sender: TObject);
-    procedure MenuItem9Click(Sender: TObject);
+    procedure Abrir_ScanlineClick(Sender: TObject);
+    procedure FiltroNegativoClick(Sender: TObject);
+    procedure colorxyzClick(Sender: TObject);
+    procedure HistogramaaClick(Sender: TObject);
     procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
@@ -126,7 +126,7 @@ begin
 
 end;
 
-procedure TForm1.MenuItem4Click(Sender: TObject);
+procedure TForm1.Abrir_ScanlineClick(Sender: TObject);
 begin
   if OpenPictureDialog1.Execute then
   begin
@@ -150,7 +150,7 @@ begin
 
 end;
 
-procedure TForm1.MenuItem5Click(Sender: TObject);
+procedure TForm1.FiltroNegativoClick(Sender: TObject);
 var
   i, j: integer;
   k: byte;
@@ -187,7 +187,7 @@ begin
 end;
 
 //cambio a modelo xyz
-procedure TForm1.MenuItem7Click(Sender: TObject);
+procedure TForm1.colorxyzClick(Sender: TObject);
 var
   i, j: integer;
   r, g, b, x, y, z: double;
@@ -227,7 +227,7 @@ begin
 end;
 
 //histograma
-procedure TForm1.MenuItem9Click(Sender: TObject);
+procedure TForm1.HistogramaaClick(Sender: TObject);
 begin
   histograma(MAT);
 end;
