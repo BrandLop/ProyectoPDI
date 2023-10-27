@@ -114,6 +114,10 @@ object Form1: TForm1
         Caption = 'Tanhip'
         OnClick = TanhipClick
       end
+      object ReduxContrast: TMenuItem
+        Caption = 'ReduxContrast'
+        OnClick = ReduxContrastClick
+      end
     end
     object MenuItem6: TMenuItem
       Caption = 'Modelo de Color'

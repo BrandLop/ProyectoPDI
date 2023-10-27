@@ -26,6 +26,7 @@ type
     Gamma: TMenuItem;
     Izq: TMenuItem;
     Der: TMenuItem;
+    ReduxContrast: TMenuItem;
     Reflexion: TMenuItem;
     Rotar: TMenuItem;
     Transformar: TMenuItem;
@@ -54,6 +55,7 @@ type
     procedure FiltroNegativoClick(Sender: TObject);
     procedure colorxyzClick(Sender: TObject);
     procedure HistogramaaClick(Sender: TObject);
+    procedure ReduxContrastClick(Sender: TObject);
     procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
@@ -230,6 +232,25 @@ end;
 procedure TForm1.HistogramaaClick(Sender: TObject);
 begin
   histograma(MAT);
+end;
+
+procedure TForm1.ReduxContrastClick(Sender: TObject);
+begin
+  Unit2.ClickEnabled:=True;
+  Form2.Hide;
+  Form2.Caption := 'Reducción de Contraste';
+  Form2.ShowModal;
+  if Form2.resp = 1 then
+  begin
+    ShowMessage('OK');
+    Form2.Show;
+  end;
+  if Form2.resp = 2 then
+  begin
+    Form2.Show;
+  end;
+  Unit2.ClickEnabled:=False;
+  Form2.Caption := 'Histograma';
 end;
 
 procedure TForm1.ReflexionClick(Sender: TObject);
@@ -631,8 +652,8 @@ end;
 
 procedure TForm1.histograma(M: MATRGB);
 begin
-  Unit2.Form2.DrawHistogramm(M, ANCHO, ALTO);
-  Unit2.Form2.Show;
+  Form2.DrawHistogramm(M, ANCHO, ALTO);
+  Form2.Show;
 end;
 
 end.
