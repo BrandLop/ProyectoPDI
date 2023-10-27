@@ -1,29 +1,32 @@
 object Form2: TForm2
-  Left = 3132
-  Height = 396
-  Top = 277
-  Width = 750
-  Caption = 'Form2'
-  ClientHeight = 396
-  ClientWidth = 750
-  DesignTimePPI = 120
+  Left = 573
+  Height = 328
+  Top = 283
+  Width = 600
+  Caption = 'Histograma'
+  ClientHeight = 328
+  ClientWidth = 600
   LCLVersion = '2.2.6.0'
   object Chart1: TChart
+    Cursor = crCross
     Left = 0
-    Height = 384
+    Height = 307
     Top = 0
-    Width = 744
+    Width = 595
+    AllowPanning = False
+    AllowZoom = False
     AxisList = <    
       item
         Grid.Style = psinsideFrame
         Intervals.NiceSteps = '0|5|10'
+        Visible = False
         Marks.LabelBrush.Style = bsClear
         Minors = <>
         Title.LabelFont.Orientation = 900
         Title.LabelBrush.Style = bsClear
       end    
       item
-        Grid.Visible = False
+        Grid.Style = psSolid
         Intervals.Count = 10
         Intervals.MaxLength = 255
         Intervals.MinLength = 0
@@ -36,6 +39,8 @@ object Form2: TForm2
     Title.Text.Strings = (
       'TAChart'
     )
+    OnMouseDown = Chart1MouseDown
+    OnMouseMove = Chart1MouseMove
     object Chart1LineSeries1: TLineSeries
       LinePen.Color = clRed
       LinePen.Width = 2
@@ -48,5 +53,20 @@ object Form2: TForm2
       LinePen.Color = clBlue
       LinePen.Width = 2
     end
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 21
+    Top = 307
+    Width = 600
+    Panels = <    
+      item
+        Text = 'X'
+        Width = 50
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
   end
 end

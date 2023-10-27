@@ -5,8 +5,8 @@ unit Unit2;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, TAGraph, TASeries,
-  TASources, TACustomSource, TATransformations;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls, TAGraph,
+  TASeries, TASources, TACustomSource, TATransformations;
 
 type
 
@@ -18,19 +18,69 @@ type
     Chart1LineSeries1: TLineSeries;
     Chart1LineSeries2: TLineSeries;
     Chart1LineSeries3: TLineSeries;
+    StatusBar1: TStatusBar;
+    procedure Chart1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer
+      );
     //function ListChartSource1Compare(AItem1, AItem2: Pointer): Integer;
   private
+    valNorm : Integer;
 
   public
+    nminval, nmaxval, resp: Integer;
     procedure DrawHistogramm(mat: MATRGB; w, h: integer);
+
   end;
 
 var
   Form2: TForm2;
+  ClickEnabled: Boolean = False;
+  counter: Byte = 0;
 
 implementation
 
 {$R *.lfm}
+
+procedure TForm2.Chart1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+const
+  min = 9;
+  max = 580;
+  new_min = 0;
+  new_max = 255;
+begin
+  valNorm:= Round((X - min) / (max - min) * (new_max - new_min) + new_min);
+  StatusBar1.Panels[1].Text:=IntToStr(valNorm);
+end;
+
+procedure TForm2.Chart1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if ClickEnabled then
+  begin
+    if Button = mbLeft then
+    begin
+      counter := counter + 1;
+      nminval:= valNorm;
+      ShowMessage('Nuevo valor minimo: '+IntToStr(nminval));
+    end;
+    if Button = mbRight then
+    begin
+      counter := counter + 1;
+      nmaxval:= valNorm;
+      ShowMessage('Nuevo valor máximo: '+IntToStr(nmaxval));
+    end;
+    if counter = 2 then
+    begin
+      resp := MessageDlg('¿Desea realizar la reducción de contraste con los valores seleccionados?', mtConfirmation, mbOKCancel, 0);
+      counter := 0;
+      Self.Close;
+    end;
+  end;
+
+end;
+
 procedure TForm2.DrawHistogramm(mat: MATRGB; w, h: integer);
 var
   i, j, area: integer;
