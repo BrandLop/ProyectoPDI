@@ -235,27 +235,78 @@ begin
 end;
 
 procedure TForm1.ReduxContrastClick(Sender: TObject);
+var
+  i,j: Integer;
+  minR, maxR, minG, maxG, minB, maxB: Byte;
 begin
   Unit2.ClickEnabled:=True;
   Form2.Hide;
   Form2.Caption := 'Reducción de Contraste';
+  Form2.Chart1.Cursor:=crCross;
   Form2.ShowModal;
   if Form2.resp = 1 then
   begin
-    ShowMessage('OK');
-    Form2.Show;
+    minR:=MAT[0,0,0];
+    minG:=MAT[0,0,1];
+    minB:=MAT[0,0,2];
+    maxR:=MAT[0,0,0];
+    maxG:=MAT[0,0,1];
+    maxB:=MAT[0,0,2];
+    for i := 0 to ALTO - 1 do
+    begin
+      for j := 0 to ANCHO - 1 do
+      begin
+        if MAT[i,j,0] > maxR then
+        begin
+          maxR:=MAT[i,j,0];
+        end
+        else if MAT[i,j,0] < minR then
+        begin
+          minR:=MAT[i,j,0];
+        end;
+        if MAT[i,j,1] > maxG then
+        begin
+          maxG:=MAT[i,j,1];
+        end
+        else if MAT[i,j,1] < minG then
+        begin
+          minG:=MAT[i,j,1];
+        end;
+        if MAT[i,j,2] > maxB then
+        begin
+          maxB:=MAT[i,j,2];
+        end
+        else if MAT[i,j,2] < minB then
+        begin
+          minB:=MAT[i,j,2];
+        end;
+      end;
+    end;
+    for i := 0 to ALTO - 1 do
+    begin
+      for j := 0 to ANCHO - 1 do
+      begin
+        MAT[i,j,0]:= Round((Form2.nmaxval-Form2.nminval)/(maxR-minR)*(MAT[i,j,0]-minR)+Form2.nminval);
+        MAT[i,j,1]:= Round((Form2.nmaxval-Form2.nminval)/(maxG-minG)*(MAT[i,j,1]-minG)+Form2.nminval);
+        MAT[i,j,2]:= Round((Form2.nmaxval-Form2.nminval)/(maxB-minB)*(MAT[i,j,2]-minB)+Form2.nminval);
+      end;
+    end;
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    histograma(MAT);
   end;
   if Form2.resp = 2 then
   begin
-    Form2.Show;
   end;
+  Form2.Chart1.Cursor:=crDefault;
+  Form2.Show;
   Unit2.ClickEnabled:=False;
   Form2.Caption := 'Histograma';
 end;
 
 procedure TForm1.ReflexionClick(Sender: TObject);
 var
-  i,j,k, midpoin, value, auxval: Integer;
+  i,j,k, midpoin, auxval: Integer;
 begin
   copMAM(AuxMAT, MAT);
   midpoin := ANCHO div 2;
@@ -589,9 +640,9 @@ begin
     for j := 0 to an - 1 do
     begin
       cl := Image1.Canvas.Pixels[j, i]; //leer valor total de color del pixel j,i
-      MAT[i, j, 0] := GetRValue(cl);
-      MAT[i, j, 1] := GetGValue(cl);
-      MAT[i, j, 2] := GetBValue(cl);
+      M[i, j, 0] := GetRValue(cl);
+      M[i, j, 1] := GetGValue(cl);
+      M[i, j, 2] := GetBValue(cl);
 
     end; //j
   end;//i
@@ -615,9 +666,9 @@ begin
     for j := 0 to an - 1 do
     begin
       k := 3 * j;
-      MAT[i, j, 0] := P[k + 2];
-      MAT[i, j, 1] := P[k + 1];
-      MAT[i, j, 2] := P[k];
+      M[i, j, 0] := P[k + 2];
+      M[i, j, 1] := P[k + 1];
+      M[i, j, 2] := P[k];
 
     end; //j
   end; //i

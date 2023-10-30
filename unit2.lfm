@@ -8,7 +8,6 @@ object Form2: TForm2
   ClientWidth = 600
   LCLVersion = '2.2.6.0'
   object Chart1: TChart
-    Cursor = crCross
     Left = 0
     Height = 307
     Top = 0
