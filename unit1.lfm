@@ -118,6 +118,10 @@ object Form1: TForm1
         Caption = 'ReduxContrast'
         OnClick = ReduxContrastClick
       end
+      object SuavizadoArit: TMenuItem
+        Caption = 'SuavizadoArit'
+        OnClick = SuavizadoAritClick
+      end
     end
     object MenuItem6: TMenuItem
       Caption = 'Modelo de Color'

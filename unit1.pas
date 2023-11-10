@@ -26,6 +26,7 @@ type
     Gamma: TMenuItem;
     Izq: TMenuItem;
     Der: TMenuItem;
+    SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
     Reflexion: TMenuItem;
     Rotar: TMenuItem;
@@ -58,6 +59,7 @@ type
     procedure ReduxContrastClick(Sender: TObject);
     procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
+    procedure SuavizadoAritClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
   private
 
@@ -354,6 +356,44 @@ begin
   copBM(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);  //visulaizar imagen
   histograma(MAT);
+end;
+
+procedure TForm1.SuavizadoAritClick(Sender: TObject);
+var
+  i, j, x, y: integer;
+  k: byte;
+  sum : Double;
+  temp: array[0..2, 0..2] of Double;
+const
+  MascaraSuavizado: array[0..2, 0..2] of Single = (
+    (1/9, 1/9, 1/9),
+    (1/9, 1/9, 1/9),
+    (1/9, 1/9, 1/9)
+  );
+begin
+  SetLength(AuxMAT, Length(MAT), Length(MAT[0]), 3);
+  for i := 1 to ALTO - 2 do
+  begin
+    for j := 1 to ANCHO -2 do
+    begin
+      for k := 0 to 2 do
+      begin
+        sum := 0;
+        for x := -1 to 1 do
+        begin
+          for y := -1 to 1 do
+          begin
+            temp[x+1,y+1] :=  MAT[i+x,j+y,k]*MascaraSuavizado[x+1,y+1];
+            sum := sum + temp[x+1,y+1];
+          end;
+        end;
+        AuxMAT[i,j,k]:=Round(sum);
+      end;
+    end;
+  end;
+  copMAM(MAT, AuxMAT);
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
 end;
 
 procedure TForm1.tanhyper(alphaval: double);
