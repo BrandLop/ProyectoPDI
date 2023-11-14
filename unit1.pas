@@ -26,6 +26,8 @@ type
     Gamma: TMenuItem;
     Izq: TMenuItem;
     Der: TMenuItem;
+    LBP: TMenuItem;
+    LBPTHRESHOLD: TMenuItem;
     SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
     Reflexion: TMenuItem;
@@ -51,6 +53,7 @@ type
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure binarizacionClick(Sender: TObject);
     procedure IzqClick(Sender: TObject);
+    procedure LBPTHRESHOLDClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure Abrir_ScanlineClick(Sender: TObject);
     procedure FiltroNegativoClick(Sender: TObject);
@@ -62,6 +65,12 @@ type
     procedure SuavizadoAritClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
   private
+  const
+    Weights: array[0..2, 0..2] of byte = (
+      (1, 2, 4),
+      (128, 0, 8),
+      (64, 32, 16)
+      );
 
   public
 
@@ -92,6 +101,8 @@ type
 
     procedure RotateImage(var OriginalMAT: MATRGB; var RotatedMAT: MATRGB;
       AngleDegrees: double);
+
+    procedure lbpMaxValue();
   end;
 
 var
@@ -238,49 +249,49 @@ end;
 
 procedure TForm1.ReduxContrastClick(Sender: TObject);
 var
-  i,j: Integer;
-  minR, maxR, minG, maxG, minB, maxB: Byte;
+  i, j: integer;
+  minR, maxR, minG, maxG, minB, maxB: byte;
 begin
-  Unit2.ClickEnabled:=True;
+  Unit2.ClickEnabled := True;
   Form2.Hide;
   Form2.Caption := 'Reducción de Contraste';
-  Form2.Chart1.Cursor:=crCross;
+  Form2.Chart1.Cursor := crCross;
   Form2.ShowModal;
   if Form2.resp = 1 then
   begin
-    minR:=MAT[0,0,0];
-    minG:=MAT[0,0,1];
-    minB:=MAT[0,0,2];
-    maxR:=MAT[0,0,0];
-    maxG:=MAT[0,0,1];
-    maxB:=MAT[0,0,2];
+    minR := MAT[0, 0, 0];
+    minG := MAT[0, 0, 1];
+    minB := MAT[0, 0, 2];
+    maxR := MAT[0, 0, 0];
+    maxG := MAT[0, 0, 1];
+    maxB := MAT[0, 0, 2];
     for i := 0 to ALTO - 1 do
     begin
       for j := 0 to ANCHO - 1 do
       begin
-        if MAT[i,j,0] > maxR then
+        if MAT[i, j, 0] > maxR then
         begin
-          maxR:=MAT[i,j,0];
+          maxR := MAT[i, j, 0];
         end
-        else if MAT[i,j,0] < minR then
+        else if MAT[i, j, 0] < minR then
         begin
-          minR:=MAT[i,j,0];
+          minR := MAT[i, j, 0];
         end;
-        if MAT[i,j,1] > maxG then
+        if MAT[i, j, 1] > maxG then
         begin
-          maxG:=MAT[i,j,1];
+          maxG := MAT[i, j, 1];
         end
-        else if MAT[i,j,1] < minG then
+        else if MAT[i, j, 1] < minG then
         begin
-          minG:=MAT[i,j,1];
+          minG := MAT[i, j, 1];
         end;
-        if MAT[i,j,2] > maxB then
+        if MAT[i, j, 2] > maxB then
         begin
-          maxB:=MAT[i,j,2];
+          maxB := MAT[i, j, 2];
         end
-        else if MAT[i,j,2] < minB then
+        else if MAT[i, j, 2] < minB then
         begin
-          minB:=MAT[i,j,2];
+          minB := MAT[i, j, 2];
         end;
       end;
     end;
@@ -288,9 +299,12 @@ begin
     begin
       for j := 0 to ANCHO - 1 do
       begin
-        MAT[i,j,0]:= Round((Form2.nmaxval-Form2.nminval)/(maxR-minR)*(MAT[i,j,0]-minR)+Form2.nminval);
-        MAT[i,j,1]:= Round((Form2.nmaxval-Form2.nminval)/(maxG-minG)*(MAT[i,j,1]-minG)+Form2.nminval);
-        MAT[i,j,2]:= Round((Form2.nmaxval-Form2.nminval)/(maxB-minB)*(MAT[i,j,2]-minB)+Form2.nminval);
+        MAT[i, j, 0] := Round((Form2.nmaxval - Form2.nminval) /
+          (maxR - minR) * (MAT[i, j, 0] - minR) + Form2.nminval);
+        MAT[i, j, 1] := Round((Form2.nmaxval - Form2.nminval) /
+          (maxG - minG) * (MAT[i, j, 1] - minG) + Form2.nminval);
+        MAT[i, j, 2] := Round((Form2.nmaxval - Form2.nminval) /
+          (maxB - minB) * (MAT[i, j, 2] - minB) + Form2.nminval);
       end;
     end;
     copMB(ALTO, ANCHO, MAT, BMAP);
@@ -300,15 +314,15 @@ begin
   if Form2.resp = 2 then
   begin
   end;
-  Form2.Chart1.Cursor:=crDefault;
+  Form2.Chart1.Cursor := crDefault;
   Form2.Show;
-  Unit2.ClickEnabled:=False;
+  Unit2.ClickEnabled := False;
   Form2.Caption := 'Histograma';
 end;
 
 procedure TForm1.ReflexionClick(Sender: TObject);
 var
-  i,j,k, midpoin, auxval: Integer;
+  i, j, k, midpoin, auxval: integer;
 begin
   copMAM(AuxMAT, MAT);
   midpoin := ANCHO div 2;
@@ -318,20 +332,20 @@ begin
     begin
       for k := 0 to 2 do
       begin
-        MAT[i,(midpoin - 1 - j),k] := AuxMAT[i,j,k];
+        MAT[i, (midpoin - 1 - j), k] := AuxMAT[i, j, k];
       end;
     end;
   end;
   for i := 0 to ALTO - 1 do
   begin
-    auxval:=0;
+    auxval := 0;
     for j := midpoin to ANCHO - 1 do
     begin
       for k := 0 to 2 do
       begin
-        MAT[i,(ANCHO - 1 - auxval),k] := AuxMAT[i,j,k];
+        MAT[i, (ANCHO - 1 - auxval), k] := AuxMAT[i, j, k];
       end;
-      auxval:=auxval + 1;
+      auxval := auxval + 1;
     end;
   end;
   copMB(ALTO, ANCHO, MAT, BMAP);
@@ -362,19 +376,19 @@ procedure TForm1.SuavizadoAritClick(Sender: TObject);
 var
   i, j, x, y: integer;
   k: byte;
-  sum : Double;
-  temp: array[0..2, 0..2] of Double;
+  sum: double;
+  temp: array[0..2, 0..2] of double;
 const
-  MascaraSuavizado: array[0..2, 0..2] of Single = (
-    (1/9, 1/9, 1/9),
-    (1/9, 1/9, 1/9),
-    (1/9, 1/9, 1/9)
-  );
+  MascaraSuavizado: array[0..2, 0..2] of single = (
+    (1 / 8, 1 / 8, 1 / 8),
+    (1 / 8, 1 / 8, 1 / 8),
+    (1 / 8, 1 / 8, 1 / 8)
+    );
 begin
-  SetLength(AuxMAT, Length(MAT), Length(MAT[0]), 3);
+  SetLength(AuxMAT, ALTO, ANCHO, 3);
   for i := 1 to ALTO - 2 do
   begin
-    for j := 1 to ANCHO -2 do
+    for j := 1 to ANCHO - 2 do
     begin
       for k := 0 to 2 do
       begin
@@ -383,17 +397,22 @@ begin
         begin
           for y := -1 to 1 do
           begin
-            temp[x+1,y+1] :=  MAT[i+x,j+y,k]*MascaraSuavizado[x+1,y+1];
-            sum := sum + temp[x+1,y+1];
+            if (x <> 0) or (y <> 0) then
+            begin
+              temp[x + 1, y + 1] :=
+                MAT[i + x, j + y, k] * MascaraSuavizado[x + 1, y + 1];
+              sum := sum + temp[x + 1, y + 1];
+            end;
           end;
         end;
-        AuxMAT[i,j,k]:=Round(sum);
+        AuxMAT[i, j, k] := Round(sum);
       end;
     end;
   end;
   copMAM(MAT, AuxMAT);
   copMB(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);
+  histograma(MAT);
 end;
 
 procedure TForm1.tanhyper(alphaval: double);
@@ -665,6 +684,76 @@ begin
     end;
   end;
   counter := counter - 1;
+end;
+
+procedure TForm1.lbpMaxValue();
+var
+  i, j, x, y: integer;
+  max, sum: byte;
+  temp: array[0..2, 0..2] of byte;
+begin
+  for i := 1 to ALTO - 2 do
+  begin
+    for j := 1 to ANCHO - 2 do
+    begin
+      max := 0;
+      sum := 0;
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
+        begin
+          if MAT[i + x, j + y, 0] > max then
+          begin
+            max := MAT[i + x, j + y, 0];
+          end;
+        end;
+      end;
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
+        begin
+          if (x <> 0) or (y <> 0) then
+          begin
+            if MAT[i + x, j + y, 0] >= max then
+            begin
+              temp[x + 1, y + 1] := 1;
+            end
+            else
+            begin
+              temp[x + 1, y + 1] := 0;
+            end;
+          end;
+        end;
+      end;
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
+        begin
+          if (x <> 0) or (y <> 0) then
+          begin
+            if temp[x + 1, y + 1] = 1 then
+            begin
+              sum := sum + Weights[x + 1, y + 1];
+            end;
+          end;
+        end;
+      end;
+      AuxMAT[i, j, 0] := sum;
+      AuxMAT[i, j, 1] := sum;
+      AuxMAT[i, j, 2] := sum;
+    end;
+  end;
+end;
+
+procedure TForm1.LBPTHRESHOLDClick(Sender: TObject);
+begin
+  escala_de_grises();
+  SetLength(AuxMAT, ALTO, ANCHO, 3);
+  lbpMaxValue();
+  copMAM(MAT, AuxMAT);
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
 end;
 
 procedure Tform1.copiaIM(al, an: integer; var M: MATRGB);

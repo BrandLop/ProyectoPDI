@@ -122,6 +122,13 @@ object Form1: TForm1
         Caption = 'SuavizadoArit'
         OnClick = SuavizadoAritClick
       end
+      object LBP: TMenuItem
+        Caption = 'LBP'
+        object LBPTHRESHOLD: TMenuItem
+          Caption = 'Max'
+          OnClick = LBPTHRESHOLDClick
+        end
+      end
     end
     object MenuItem6: TMenuItem
       Caption = 'Modelo de Color'
