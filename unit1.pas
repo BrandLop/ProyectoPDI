@@ -28,6 +28,7 @@ type
     Der: TMenuItem;
     LBP: TMenuItem;
     LBPTHRESHOLD: TMenuItem;
+    LBPSTD: TMenuItem;
     SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
     Reflexion: TMenuItem;
@@ -53,6 +54,7 @@ type
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure binarizacionClick(Sender: TObject);
     procedure IzqClick(Sender: TObject);
+    procedure LBPSTDClick(Sender: TObject);
     procedure LBPTHRESHOLDClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure Abrir_ScanlineClick(Sender: TObject);
@@ -103,6 +105,7 @@ type
       AngleDegrees: double);
 
     procedure lbpMaxValue();
+    procedure lbpSTDTHRES();
   end;
 
 var
@@ -686,6 +689,80 @@ begin
   counter := counter - 1;
 end;
 
+procedure TForm1.lbpSTDTHRES();
+var
+  i, j, x, y: integer;
+  max, sum, k: byte;
+  stad: double;
+  values: array[0..7] of double;
+  temp: array[0..2, 0..2] of byte;
+begin
+  for i := 1 to ALTO - 2 do
+  begin
+    for j := 1 to ANCHO - 2 do
+    begin
+      k := 0;
+      sum := 0;
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
+        begin
+          if (x <> 0) or (y <> 0) then
+          begin
+            values[k] := MAT[i + x, j + y, 0];
+            k := k + 1;
+          end;
+        end;
+      end;
+      stad := Stddev(values);
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
+        begin
+          if (x <> 0) or (y <> 0) then
+          begin
+            if MAT[i + x, j + y, 0] >= stad then
+            begin
+              temp[x + 1, y + 1] := 1;
+            end
+            else
+            begin
+              temp[x + 1, y + 1] := 0;
+            end;
+          end;
+        end;
+      end;
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
+        begin
+          if (x <> 0) or (y <> 0) then
+          begin
+            if temp[x + 1, y + 1] = 1 then
+            begin
+              sum := sum + Weights[x + 1, y + 1];
+            end;
+          end;
+        end;
+      end;
+      AuxMAT[i, j, 0] := sum;
+      AuxMAT[i, j, 1] := sum;
+      AuxMAT[i, j, 2] := sum;
+    end;
+  end;
+end;
+
+procedure TForm1.LBPSTDClick(Sender: TObject);
+begin
+  escala_de_grises();
+  SetLength(AuxMAT, ALTO, ANCHO, 3);
+  lbpSTDTHRES();
+  copMAM(MAT, AuxMAT);
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
+end;
+
 procedure TForm1.lbpMaxValue();
 var
   i, j, x, y: integer;
@@ -702,9 +779,12 @@ begin
       begin
         for y := -1 to 1 do
         begin
-          if MAT[i + x, j + y, 0] > max then
+          if (x <> 0) or (y <> 0) then
           begin
-            max := MAT[i + x, j + y, 0];
+            if MAT[i + x, j + y, 0] > max then
+            begin
+              max := MAT[i + x, j + y, 0];
+            end;
           end;
         end;
       end;
