@@ -29,6 +29,7 @@ type
     LBP: TMenuItem;
     LBPTHRESHOLD: TMenuItem;
     LBPSTD: TMenuItem;
+    Bordes: TMenuItem;
     SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
     Reflexion: TMenuItem;
@@ -61,6 +62,7 @@ type
     procedure FiltroNegativoClick(Sender: TObject);
     procedure colorxyzClick(Sender: TObject);
     procedure HistogramaaClick(Sender: TObject);
+    procedure BordesClick(Sender: TObject);
     procedure ReduxContrastClick(Sender: TObject);
     procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
@@ -106,6 +108,7 @@ type
 
     procedure lbpMaxValue();
     procedure lbpSTDTHRES();
+    procedure gradient();
   end;
 
 var
@@ -247,6 +250,14 @@ end;
 //histograma
 procedure TForm1.HistogramaaClick(Sender: TObject);
 begin
+  histograma(MAT);
+end;
+
+procedure TForm1.BordesClick(Sender: TObject);
+begin
+  gradient();
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
   histograma(MAT);
 end;
 
@@ -748,6 +759,24 @@ begin
       AuxMAT[i, j, 0] := sum;
       AuxMAT[i, j, 1] := sum;
       AuxMAT[i, j, 2] := sum;
+    end;
+  end;
+end;
+
+procedure TForm1.gradient();
+var
+  i, j: integer;
+  k: byte;
+begin
+  for i := 0 to ALTO - 2 do
+  begin
+    for j := 0 to ANCHO - 2 do
+    begin
+      for k := 0 to 2 do
+      begin
+        MAT[i, j, k] := Round(
+          (0.5) * (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) + Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
+      end;
     end;
   end;
 end;

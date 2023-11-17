@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 51
+  Left = 3
   Height = 732
-  Top = 58
+  Top = 8
   Width = 997
   Caption = 'Form1'
-  ClientHeight = 712
-  ClientWidth = 997
+  ClientHeight = 0
+  ClientWidth = 0
   Menu = MainMenu1
   OnCreate = FormCreate
   LCLVersion = '2.0.12.0'
@@ -132,6 +132,10 @@ object Form1: TForm1
           Caption = 'STD'
           OnClick = LBPSTDClick
         end
+      end
+      object Bordes: TMenuItem
+        Caption = 'Bordes'
+        OnClick = BordesClick
       end
     end
     object MenuItem6: TMenuItem
