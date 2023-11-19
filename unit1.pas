@@ -30,6 +30,7 @@ type
     LBPTHRESHOLD: TMenuItem;
     LBPSTD: TMenuItem;
     Bordes: TMenuItem;
+    Patron: TMenuItem;
     SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
     Reflexion: TMenuItem;
@@ -63,6 +64,7 @@ type
     procedure colorxyzClick(Sender: TObject);
     procedure HistogramaaClick(Sender: TObject);
     procedure BordesClick(Sender: TObject);
+    procedure PatronClick(Sender: TObject);
     procedure ReduxContrastClick(Sender: TObject);
     procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
@@ -109,6 +111,7 @@ type
     procedure lbpMaxValue();
     procedure lbpSTDTHRES();
     procedure gradient();
+    procedure pattern();
   end;
 
 var
@@ -116,7 +119,7 @@ var
   Form1: TForm1;
   ALTO, ANCHO, NewAncho, NewAlto: integer; //dimensiones de la imagen
   MAT, AuxMAT: MATRGB;
-  BMAP: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
+  BMAP, BMAP2: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
   pathFile: string;
   counter: shortint = 0;
   grades: double = 0.0;
@@ -256,6 +259,52 @@ end;
 procedure TForm1.BordesClick(Sender: TObject);
 begin
   gradient();
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
+end;
+
+procedure TForm1.pattern();
+var
+  i, j, al, an, res: integer;
+  k: byte;
+  AuxMAT2: MATRGB;
+begin
+  BMAP2 := TBitmap.Create;
+  BMAP2.LoadFromFile('./patron.bmp');
+  al := Min(ALTO, BMAP2.Height);
+  an := Min(ANCHO, BMAP2.Width);
+  SetLength(AuxMAT, al, an, 3);
+  SetLength(AuxMAT2, al, an, 3);
+  copBM(al, an, AuxMAT, BMAP2);
+  for i := 0 to al - 1 do
+  begin
+    for j := 0 to an - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        res := MAT[i, j, k] - AuxMAT[i, j, k];
+        if res <= 0 then
+        begin
+          AuxMAT2[i, j, k] := 0;
+        end
+        else
+        begin
+          AuxMAT2[i, j, k] := res;
+        end;
+      end;
+    end;
+  end;
+  ALTO := al;
+  ANCHO := an;
+  BMAP.Width := ANCHO;
+  BMAP.Height := ALTO;
+  copMAM(MAT, AuxMAT2);
+end;
+
+procedure TForm1.PatronClick(Sender: TObject);
+begin
+  pattern();
   copMB(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);
   histograma(MAT);
@@ -774,8 +823,8 @@ begin
     begin
       for k := 0 to 2 do
       begin
-        MAT[i, j, k] := Round(
-          (0.5) * (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) + Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
+        MAT[i, j, k] := Round((0.5) *
+          (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) + Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
       end;
     end;
   end;

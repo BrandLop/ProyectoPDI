@@ -1,14 +1,14 @@
 object Form1: TForm1
-  Left = 3
+  Left = 464
   Height = 732
-  Top = 8
+  Top = 32
   Width = 997
   Caption = 'Form1'
-  ClientHeight = 0
-  ClientWidth = 0
+  ClientHeight = 705
+  ClientWidth = 997
   Menu = MainMenu1
   OnCreate = FormCreate
-  LCLVersion = '2.0.12.0'
+  LCLVersion = '2.2.6.0'
   object ScrollBox1: TScrollBox
     Left = 19
     Height = 813
@@ -16,8 +16,8 @@ object Form1: TForm1
     Width = 832
     HorzScrollBar.Page = 136
     VertScrollBar.Page = 120
-    ClientHeight = 809
-    ClientWidth = 828
+    ClientHeight = 811
+    ClientWidth = 830
     TabOrder = 0
     object Image1: TImage
       Cursor = crCross
@@ -32,8 +32,8 @@ object Form1: TForm1
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 23
-    Top = 689
+    Height = 21
+    Top = 684
     Width = 997
     Panels = <    
       item
@@ -136,6 +136,10 @@ object Form1: TForm1
       object Bordes: TMenuItem
         Caption = 'Bordes'
         OnClick = BordesClick
+      end
+      object Patron: TMenuItem
+        Caption = 'Patron'
+        OnClick = PatronClick
       end
     end
     object MenuItem6: TMenuItem
