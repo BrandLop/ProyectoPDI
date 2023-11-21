@@ -20,7 +20,7 @@ type
   private
 
   public
-    gamval: Double;
+    gamval: double;
 
   end;
 
@@ -39,4 +39,3 @@ begin
 end;
 
 end.
-

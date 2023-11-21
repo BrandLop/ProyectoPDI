@@ -21,7 +21,7 @@ type
   private
 
   public
-    rsize: Integer;
+    rsize: integer;
 
   end;
 
@@ -36,8 +36,7 @@ implementation
 
 procedure TForm3.TrackBar1Change(Sender: TObject);
 begin
-  rsize:= TrackBar1.Position;
+  rsize := TrackBar1.Position;
 end;
 
 end.
-

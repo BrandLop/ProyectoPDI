@@ -125,7 +125,7 @@ var
   pathFile: string;
   counter: shortint = 0;
   grades: double = 0.0;
-  colorscheme: Array[0..255] of Array[0..2] of Byte;
+  colorscheme: array[0..255] of array[0..2] of byte;
 
 implementation
 
@@ -388,56 +388,56 @@ end;
 
 procedure TForm1.generatecolscheme();
 var
-  i : Integer;
-  t : Double;
-  colors: Array[0..3] of Array[0..2] of Byte;
+  i: integer;
+  t: double;
+  colors: array[0..3] of array[0..2] of byte;
   colorSelected: TColor;
-  r,g,b : Byte;
+  r, g, b: byte;
 begin
   for i := 0 to 3 do
   begin
     if ColorDialog1.Execute then
     begin
-      colorSelected:= ColorDialog1.Color;
-      colors[i,0] := GetRValue(colorSelected);
-      colors[i,1] := GetGValue(colorSelected);
-      colors[i,2] := GetBValue(colorSelected);
+      colorSelected := ColorDialog1.Color;
+      colors[i, 0] := GetRValue(colorSelected);
+      colors[i, 1] := GetGValue(colorSelected);
+      colors[i, 2] := GetBValue(colorSelected);
     end;
   end;
 
-  for i := 0 to 85-1 do
+  for i := 0 to 85 - 1 do
   begin
     t := i / 85;
-    r := Round((1-t) * colors[0,0] + t * colors[1,0]);
-    g := Round((1-t) * colors[0,1] + t * colors[1,1]);
-    b := Round((1-t) * colors[0,2] + t * colors[1,2]);
+    r := Round((1 - t) * colors[0, 0] + t * colors[1, 0]);
+    g := Round((1 - t) * colors[0, 1] + t * colors[1, 1]);
+    b := Round((1 - t) * colors[0, 2] + t * colors[1, 2]);
     colorscheme[i, 0] := r;
     colorscheme[i, 1] := g;
     colorscheme[i, 2] := b;
   end;
-  for i := 0 to 85-1 do
+  for i := 0 to 85 - 1 do
   begin
     t := i / 85;
-    r := Round((1-t) * colors[1,0] + t * colors[2,0]);
-    g := Round((1-t) * colors[1,1] + t * colors[2,1]);
-    b := Round((1-t) * colors[1,2] + t * colors[2,2]);
-    colorscheme[i+85, 0] := r;
-    colorscheme[i+85, 1] := g;
-    colorscheme[i+85, 2] := b;
+    r := Round((1 - t) * colors[1, 0] + t * colors[2, 0]);
+    g := Round((1 - t) * colors[1, 1] + t * colors[2, 1]);
+    b := Round((1 - t) * colors[1, 2] + t * colors[2, 2]);
+    colorscheme[i + 85, 0] := r;
+    colorscheme[i + 85, 1] := g;
+    colorscheme[i + 85, 2] := b;
   end;
-  for i := 0 to 85-1 do
+  for i := 0 to 85 - 1 do
   begin
     t := i / 85;
-    r := Round((1-t) * colors[2,0] + t * colors[3,0]);
-    g := Round((1-t) * colors[2,1] + t * colors[3,1]);
-    b := Round((1-t) * colors[2,2] + t * colors[3,2]);
-    colorscheme[i+170, 0] := r;
-    colorscheme[i+170, 1] := g;
-    colorscheme[i+170, 2] := b;    
+    r := Round((1 - t) * colors[2, 0] + t * colors[3, 0]);
+    g := Round((1 - t) * colors[2, 1] + t * colors[3, 1]);
+    b := Round((1 - t) * colors[2, 2] + t * colors[3, 2]);
+    colorscheme[i + 170, 0] := r;
+    colorscheme[i + 170, 1] := g;
+    colorscheme[i + 170, 2] := b;
   end;
-  colorscheme[255, 0] := colors[3,0];
-  colorscheme[255, 1] := colors[3,1];
-  colorscheme[255, 2] := colors[3,2]; 
+  colorscheme[255, 0] := colors[3, 0];
+  colorscheme[255, 1] := colors[3, 1];
+  colorscheme[255, 2] := colors[3, 2];
 end;
 
 procedure TForm1.ReflexionClick(Sender: TObject);
@@ -867,9 +867,9 @@ begin
       AuxMAT[i, j, 0] := sum;
       AuxMAT[i, j, 1] := sum;
       AuxMAT[i, j, 2] := sum;
-      MATColor[i, j, 0] := colorscheme[sum,0];
-      MATColor[i, j, 1] := colorscheme[sum,1];
-      MATColor[i, j, 2] := colorscheme[sum,2];
+      MATColor[i, j, 0] := colorscheme[sum, 0];
+      MATColor[i, j, 1] := colorscheme[sum, 1];
+      MATColor[i, j, 2] := colorscheme[sum, 2];
     end;
   end;
   copMB(ALTO, ANCHO, MATColor, BMAP);
@@ -887,8 +887,9 @@ begin
     begin
       for k := 0 to 2 do
       begin
-        MAT[i, j, k] := Round((0.5) *
-          (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) + Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
+        MAT[i, j, k] := Round(
+          (0.5) * (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) +
+          Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
       end;
     end;
   end;
@@ -967,9 +968,9 @@ begin
       AuxMAT[i, j, 0] := sum;
       AuxMAT[i, j, 1] := sum;
       AuxMAT[i, j, 2] := sum;
-      MATColor[i, j, 0] := colorscheme[sum,0];
-      MATColor[i, j, 1] := colorscheme[sum,1];
-      MATColor[i, j, 2] := colorscheme[sum,2];
+      MATColor[i, j, 0] := colorscheme[sum, 0];
+      MATColor[i, j, 1] := colorscheme[sum, 1];
+      MATColor[i, j, 2] := colorscheme[sum, 2];
     end;
   end;
   copMB(ALTO, ANCHO, MATColor, BMAP);
@@ -978,7 +979,7 @@ end;
 
 procedure TForm1.LBPTHRESHOLDClick(Sender: TObject);
 begin
-  generatecolscheme();  
+  generatecolscheme();
   escala_de_grises();
   SetLength(AuxMAT, ALTO, ANCHO, 3);
   lbpMaxValue();
