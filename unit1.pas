@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
-  ExtDlgs, LCLIntf, ComCtrls, StdCtrls, Math, Unit2, Unit3, Unit4;
+  ExtDlgs, LCLIntf, ComCtrls, StdCtrls, Math, Unit2, Unit3, Unit4, unit5;
 
 type
 
@@ -18,6 +18,7 @@ type
   //Tri-dimensional para almacenar contenido de imagen
 
   TForm1 = class(TForm)
+    ColorDialog1: TColorDialog;
     Image1: TImage;
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
@@ -112,6 +113,7 @@ type
     procedure lbpSTDTHRES();
     procedure gradient();
     procedure pattern();
+    procedure generatecolscheme();
   end;
 
 var
@@ -123,6 +125,7 @@ var
   pathFile: string;
   counter: shortint = 0;
   grades: double = 0.0;
+  colorscheme: Array[0..255] of Array[0..2] of Byte;
 
 implementation
 
@@ -381,6 +384,60 @@ begin
   Form2.Show;
   Unit2.ClickEnabled := False;
   Form2.Caption := 'Histograma';
+end;
+
+procedure TForm1.generatecolscheme();
+var
+  i : Integer;
+  t : Double;
+  colors: Array[0..3] of Array[0..2] of Byte;
+  colorSelected: TColor;
+  r,g,b : Byte;
+begin
+  for i := 0 to 3 do
+  begin
+    if ColorDialog1.Execute then
+    begin
+      colorSelected:= ColorDialog1.Color;
+      colors[i,0] := GetRValue(colorSelected);
+      colors[i,1] := GetGValue(colorSelected);
+      colors[i,2] := GetBValue(colorSelected);
+    end;
+  end;
+
+  for i := 0 to 85-1 do
+  begin
+    t := i / 85;
+    r := Round((1-t) * colors[0,0] + t * colors[1,0]);
+    g := Round((1-t) * colors[0,1] + t * colors[1,1]);
+    b := Round((1-t) * colors[0,2] + t * colors[1,2]);
+    colorscheme[i, 0] := r;
+    colorscheme[i, 1] := g;
+    colorscheme[i, 2] := b;
+  end;
+  for i := 0 to 85-1 do
+  begin
+    t := i / 85;
+    r := Round((1-t) * colors[1,0] + t * colors[2,0]);
+    g := Round((1-t) * colors[1,1] + t * colors[2,1]);
+    b := Round((1-t) * colors[1,2] + t * colors[2,2]);
+    colorscheme[i+85, 0] := r;
+    colorscheme[i+85, 1] := g;
+    colorscheme[i+85, 2] := b;
+  end;
+  for i := 0 to 85-1 do
+  begin
+    t := i / 85;
+    r := Round((1-t) * colors[2,0] + t * colors[3,0]);
+    g := Round((1-t) * colors[2,1] + t * colors[3,1]);
+    b := Round((1-t) * colors[2,2] + t * colors[3,2]);
+    colorscheme[i+170, 0] := r;
+    colorscheme[i+170, 1] := g;
+    colorscheme[i+170, 2] := b;    
+  end;
+  colorscheme[255, 0] := colors[3,0];
+  colorscheme[255, 1] := colors[3,1];
+  colorscheme[255, 2] := colors[3,2]; 
 end;
 
 procedure TForm1.ReflexionClick(Sender: TObject);
@@ -754,9 +811,11 @@ var
   i, j, x, y: integer;
   max, sum, k: byte;
   stad: double;
+  MATColor: MATRGB;
   values: array[0..7] of double;
   temp: array[0..2, 0..2] of byte;
 begin
+  SetLength(MATColor, ALTO, ANCHO, 3);
   for i := 1 to ALTO - 2 do
   begin
     for j := 1 to ANCHO - 2 do
@@ -808,8 +867,13 @@ begin
       AuxMAT[i, j, 0] := sum;
       AuxMAT[i, j, 1] := sum;
       AuxMAT[i, j, 2] := sum;
+      MATColor[i, j, 0] := colorscheme[sum,0];
+      MATColor[i, j, 1] := colorscheme[sum,1];
+      MATColor[i, j, 2] := colorscheme[sum,2];
     end;
   end;
+  copMB(ALTO, ANCHO, MATColor, BMAP);
+  Form5.Image1.Picture.Assign(BMAP);
 end;
 
 procedure TForm1.gradient();
@@ -832,6 +896,7 @@ end;
 
 procedure TForm1.LBPSTDClick(Sender: TObject);
 begin
+  generatecolscheme();
   escala_de_grises();
   SetLength(AuxMAT, ALTO, ANCHO, 3);
   lbpSTDTHRES();
@@ -839,14 +904,17 @@ begin
   copMB(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);
   histograma(MAT);
+  Form5.ShowModal;
 end;
 
 procedure TForm1.lbpMaxValue();
 var
   i, j, x, y: integer;
   max, sum: byte;
+  MATColor: MATRGB;
   temp: array[0..2, 0..2] of byte;
 begin
+  SetLength(MATColor, ALTO, ANCHO, 3);
   for i := 1 to ALTO - 2 do
   begin
     for j := 1 to ANCHO - 2 do
@@ -899,12 +967,18 @@ begin
       AuxMAT[i, j, 0] := sum;
       AuxMAT[i, j, 1] := sum;
       AuxMAT[i, j, 2] := sum;
+      MATColor[i, j, 0] := colorscheme[sum,0];
+      MATColor[i, j, 1] := colorscheme[sum,1];
+      MATColor[i, j, 2] := colorscheme[sum,2];
     end;
   end;
+  copMB(ALTO, ANCHO, MATColor, BMAP);
+  Form5.Image1.Picture.Assign(BMAP);
 end;
 
 procedure TForm1.LBPTHRESHOLDClick(Sender: TObject);
 begin
+  generatecolscheme();  
   escala_de_grises();
   SetLength(AuxMAT, ALTO, ANCHO, 3);
   lbpMaxValue();
@@ -912,6 +986,7 @@ begin
   copMB(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);
   histograma(MAT);
+  Form5.ShowModal;
 end;
 
 procedure Tform1.copiaIM(al, an: integer; var M: MATRGB);
