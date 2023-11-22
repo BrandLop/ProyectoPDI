@@ -1,13 +1,13 @@
 object Form2: TForm2
-  Left = 311
+  Left = 714
   Height = 328
-  Top = 208
+  Top = 251
   Width = 600
   Caption = 'Histograma'
   ClientHeight = 328
   ClientWidth = 600
   Position = poScreenCenter
-  LCLVersion = '2.0.12.0'
+  LCLVersion = '2.2.6.0'
   object Chart1: TChart
     Left = 0
     Height = 307
@@ -59,8 +59,8 @@ object Form2: TForm2
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 23
-    Top = 305
+    Height = 21
+    Top = 307
     Width = 600
     Panels = <    
       item

@@ -178,6 +178,13 @@ object Form1: TForm1
         OnClick = ReflexionClick
       end
     end
+    object Morfologicos: TMenuItem
+      Caption = 'Morfologicos'
+      object Erosion: TMenuItem
+        Caption = 'Erosion'
+        OnClick = ErosionClick
+      end
+    end
   end
   object OpenPictureDialog1: TOpenPictureDialog
     Filter = 'BMPs (*.bmp)|*.bmp'

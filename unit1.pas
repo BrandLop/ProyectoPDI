@@ -31,6 +31,8 @@ type
     LBPTHRESHOLD: TMenuItem;
     LBPSTD: TMenuItem;
     Bordes: TMenuItem;
+    Erosion: TMenuItem;
+    Morfologicos: TMenuItem;
     Patron: TMenuItem;
     SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
@@ -51,6 +53,7 @@ type
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
     procedure DerClick(Sender: TObject);
+    procedure ErosionClick(Sender: TObject);
     procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GammaClick(Sender: TObject);
@@ -114,6 +117,8 @@ type
     procedure gradient();
     procedure pattern();
     procedure generatecolscheme();
+    procedure erosionate();
+    procedure binarize();
   end;
 
 var
@@ -751,6 +756,101 @@ begin
     end;
   end;
   counter := counter + 1;
+end;
+
+procedure TForm1.binarize();
+var
+  sumatoria, threshold, i, j: integer;
+begin
+  sumatoria := 0;
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      sumatoria := sumatoria + MAT[i, j, 0];
+    end;
+  end;
+  threshold := sumatoria div (ALTO*ANCHO);
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      if MAT[i, j, 0] > threshold then
+      begin
+        MAT[i, j, 0] := 255;
+        MAT[i, j, 1] := 255;
+        MAT[i, j, 2] := 255;
+      end
+      else
+      begin
+        MAT[i, j, 0] := 0;
+        MAT[i, j, 1] := 0;
+        MAT[i, j, 2] := 0;
+      end;
+    end;
+  end;
+end;
+
+procedure TForm1.erosionate();
+var
+  i, j, x, y: integer;
+  k: byte;
+  sum: byte;
+  //temp: array[0..2, 0..2] of double;
+const
+  Estructura: array[0..2, 0..2] of Byte = (
+    (255, 0, 255),
+    (0, 255, 0),
+    (255, 0, 255)
+    );
+begin
+  copMAM(AuxMAT, MAT);
+  for i := 1 to ALTO - 2 do
+  begin
+    for j := 1 to ANCHO - 2 do
+    begin
+        sum := 0;
+        for x := -1 to 1 do
+        begin
+          for y := -1 to 1 do
+          begin
+            if AuxMAT[i + x, j + y, 0] = Estructura[x + 1, y + 1] then
+            begin
+              sum:= sum + 1;
+            end;
+          end;
+        end;
+        if sum =  4 then
+        begin
+          for x := -1 to 1 do
+          begin
+            for y := -1 to 1 do
+            begin
+              for k := 0 to 2 do
+              begin
+                if (x = 0) and (y = 0) then
+                begin
+                  MAT[i + x, j + y, k] := 0;
+                end
+                else
+                begin
+                  MAT[i + x, j + y, k] := 255
+                end;
+              end;
+            end;
+          end;
+        end;
+    end;
+  end;
+end;
+
+procedure TForm1.ErosionClick(Sender: TObject);
+begin
+  binarize();
+  erosionate();
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
 end;
 
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
