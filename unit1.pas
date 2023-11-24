@@ -336,6 +336,8 @@ begin
     maxR := MAT[0, 0, 0];
     maxG := MAT[0, 0, 1];
     maxB := MAT[0, 0, 2];
+    ShowMessage(IntToStr(Form2.nmaxval));
+    showMessage(IntToStr(Form2.nminval));
     for i := 0 to ALTO - 1 do
     begin
       for j := 0 to ANCHO - 1 do
@@ -799,9 +801,9 @@ var
   //temp: array[0..2, 0..2] of double;
 const
   Estructura: array[0..2, 0..2] of Byte = (
-    (255, 0, 255),
-    (0, 255, 0),
-    (255, 0, 255)
+    (0, 0, 0),
+    (0, 0, 0),
+    (0, 0, 0)
     );
 begin
   copMAM(AuxMAT, MAT);
@@ -820,25 +822,37 @@ begin
             end;
           end;
         end;
-        if sum =  4 then
+        if sum = 9 then
         begin
-          for x := -1 to 1 do
-          begin
-            for y := -1 to 1 do
-            begin
-              for k := 0 to 2 do
-              begin
-                if (x = 0) and (y = 0) then
-                begin
-                  MAT[i + x, j + y, k] := 0;
-                end
-                else
-                begin
-                  MAT[i + x, j + y, k] := 255
-                end;
-              end;
-            end;
-          end;
+          MAT[i, j, 0] := 0;
+          MAT[i, j, 1] := 0;
+          MAT[i, j, 2] := 0;
+          //ShowMessage('Encontro coincidencia');
+          //for x := -1 to 1 do
+          //begin
+          //  for y := -1 to 1 do
+          //  begin
+          //    for k := 0 to 2 do
+          //    begin
+          //      if (x = 0) and (y = 0) then
+          //      begin
+          //        //ShowMessage(IntToStr(i + x));
+          //        //ShowMessage(IntToStr(j + y));
+          //        MAT[i + x, j + y, k] := 0;
+          //      end
+          //      else
+          //      begin
+          //        MAT[i + x, j + y, k] := 255
+          //      end;
+          //    end;
+          //  end;
+          //end;
+        end
+        else
+        begin
+          MAT[i, j, 0] := 255;
+          MAT[i, j, 1] := 255;
+          MAT[i, j, 2] := 255;
         end;
     end;
   end;
