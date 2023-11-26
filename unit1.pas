@@ -20,35 +20,37 @@ type
   TForm1 = class(TForm)
     ColorDialog1: TColorDialog;
     Image1: TImage;
+    ImageList1: TImageList;
     MainMenu1: TMainMenu;
     MenuItem1: TMenuItem;
-    FiltroGrises: TMenuItem;
-    binarizacion: TMenuItem;
-    Gamma: TMenuItem;
-    Izq: TMenuItem;
-    Der: TMenuItem;
     LBP: TMenuItem;
     LBPTHRESHOLD: TMenuItem;
     LBPSTD: TMenuItem;
     Bordes: TMenuItem;
     Erosion: TMenuItem;
     Morfologicos: TMenuItem;
-    Patron: TMenuItem;
-    SuavizadoArit: TMenuItem;
     ReduxContrast: TMenuItem;
-    Reflexion: TMenuItem;
-    Rotar: TMenuItem;
-    Transformar: TMenuItem;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton10: TToolButton;
+    ToolButton11: TToolButton;
+    ToolButton12: TToolButton;
+    ToolButton13: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
+    ToolButton6: TToolButton;
+    ToolButton7: TToolButton;
+    ToolButton8: TToolButton;
+    ToolButton9: TToolButton;
     Tanhip: TMenuItem;
-    Restaurar: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     Abrir_Scanline: TMenuItem;
     FiltroNegativo: TMenuItem;
     MenuItem6: TMenuItem;
     colorxyz: TMenuItem;
-    MenuItem8: TMenuItem;
-    Histogramaa: TMenuItem;
     OpenPictureDialog1: TOpenPictureDialog;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
@@ -68,12 +70,23 @@ type
     procedure colorxyzClick(Sender: TObject);
     procedure HistogramaaClick(Sender: TObject);
     procedure BordesClick(Sender: TObject);
-    procedure PatronClick(Sender: TObject);
     procedure ReduxContrastClick(Sender: TObject);
     procedure ReflexionClick(Sender: TObject);
     procedure RestaurarClick(Sender: TObject);
     procedure SuavizadoAritClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
+    procedure ToolButton10Click(Sender: TObject);
+    procedure ToolButton11Click(Sender: TObject);
+    procedure ToolButton12Click(Sender: TObject);
+    procedure ToolButton13Click(Sender: TObject);
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+    procedure ToolButton5Click(Sender: TObject);
+    procedure ToolButton6Click(Sender: TObject);
+    procedure ToolButton7Click(Sender: TObject);
+    procedure ToolButton8Click(Sender: TObject);
+    procedure ToolButton9Click(Sender: TObject);
   private
   const
     Weights: array[0..2, 0..2] of byte = (
@@ -160,26 +173,26 @@ end;
 
 procedure TForm1.Abrir_ScanlineClick(Sender: TObject);
 begin
-  if OpenPictureDialog1.Execute then
-  begin
-    Image1.Enabled := True;
-    pathFile := OpenPictureDialog1.FileName;
-    BMAP.LoadFromFile(pathFile);
-    ALTO := BMAP.Height;
-    ANCHO := BMAP.Width;
-
-    if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
-    begin
-      BMAP.PixelFormat := pf24bit;
-    end;
-
-    StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
-    SetLength(MAT, ALTO, ANCHO, 3);
-    copBM(ALTO, ANCHO, MAT, BMAP);
-    Image1.Picture.Assign(BMAP);  //visulaizar imagen
-    histograma(MAT);
-  end;
-
+  //if OpenPictureDialog1.Execute then
+  //begin
+  //  Image1.Enabled := True;
+  //  pathFile := OpenPictureDialog1.FileName;
+  //  BMAP.LoadFromFile(pathFile);
+  //  ALTO := BMAP.Height;
+  //  ANCHO := BMAP.Width;
+  //
+  //  if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
+  //  begin
+  //    BMAP.PixelFormat := pf24bit;
+  //  end;
+  //
+  //  StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
+  //  SetLength(MAT, ALTO, ANCHO, 3);
+  //  copBM(ALTO, ANCHO, MAT, BMAP);
+  //  Image1.Picture.Assign(BMAP);  //visulaizar imagen
+  //  histograma(MAT);
+  //end;
+  //
 end;
 
 procedure TForm1.FiltroNegativoClick(Sender: TObject);
@@ -308,14 +321,6 @@ begin
   BMAP.Width := ANCHO;
   BMAP.Height := ALTO;
   copMAM(MAT, AuxMAT2);
-end;
-
-procedure TForm1.PatronClick(Sender: TObject);
-begin
-  pattern();
-  copMB(ALTO, ANCHO, MAT, BMAP);
-  Image1.Picture.Assign(BMAP);
-  histograma(MAT);
 end;
 
 procedure TForm1.ReduxContrastClick(Sender: TObject);
@@ -451,55 +456,133 @@ procedure TForm1.ReflexionClick(Sender: TObject);
 var
   i, j, k, midpoin, auxval: integer;
 begin
-  copMAM(AuxMAT, MAT);
-  midpoin := ANCHO div 2;
-  for i := 0 to ALTO - 1 do
-  begin
-    for j := 0 to midpoin - 1 do
-    begin
-      for k := 0 to 2 do
-      begin
-        MAT[i, (midpoin - 1 - j), k] := AuxMAT[i, j, k];
-      end;
-    end;
-  end;
-  for i := 0 to ALTO - 1 do
-  begin
-    auxval := 0;
-    for j := midpoin to ANCHO - 1 do
-    begin
-      for k := 0 to 2 do
-      begin
-        MAT[i, (ANCHO - 1 - auxval), k] := AuxMAT[i, j, k];
-      end;
-      auxval := auxval + 1;
-    end;
-  end;
-  copMB(ALTO, ANCHO, MAT, BMAP);
-  Image1.Picture.Assign(BMAP);
+  //copMAM(AuxMAT, MAT);
+  //midpoin := ANCHO div 2;
+  //for i := 0 to ALTO - 1 do
+  //begin
+  //  for j := 0 to midpoin - 1 do
+  //  begin
+  //    for k := 0 to 2 do
+  //    begin
+  //      MAT[i, (midpoin - 1 - j), k] := AuxMAT[i, j, k];
+  //    end;
+  //  end;
+  //end;
+  //for i := 0 to ALTO - 1 do
+  //begin
+  //  auxval := 0;
+  //  for j := midpoin to ANCHO - 1 do
+  //  begin
+  //    for k := 0 to 2 do
+  //    begin
+  //      MAT[i, (ANCHO - 1 - auxval), k] := AuxMAT[i, j, k];
+  //    end;
+  //    auxval := auxval + 1;
+  //  end;
+  //end;
+  //copMB(ALTO, ANCHO, MAT, BMAP);
+  //Image1.Picture.Assign(BMAP);
 end;
 
 procedure TForm1.RestaurarClick(Sender: TObject);
 begin
-  BMAP.LoadFromFile(pathFile);
-  ALTO := BMAP.Height;
-  ANCHO := BMAP.Width;
-
-  if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
-  begin
-    BMAP.PixelFormat := pf24bit;
-  end;
-
-  counter := 0;
-  grades := 0.0;
-  StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
-  SetLength(MAT, ALTO, ANCHO, 3);
-  copBM(ALTO, ANCHO, MAT, BMAP);
-  Image1.Picture.Assign(BMAP);  //visulaizar imagen
-  histograma(MAT);
+  //BMAP.LoadFromFile(pathFile);
+  //ALTO := BMAP.Height;
+  //ANCHO := BMAP.Width;
+  //if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
+  //begin
+  //  BMAP.PixelFormat := pf24bit;
+  //end;
+  //counter := 0;
+  //grades := 0.0;
+  //StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
+  //SetLength(MAT, ALTO, ANCHO, 3);
+  //copBM(ALTO, ANCHO, MAT, BMAP);
+  //Image1.Picture.Assign(BMAP);  //visulaizar imagen
+  //histograma(MAT);
 end;
 
 procedure TForm1.SuavizadoAritClick(Sender: TObject);
+var
+  i, j, x, y: integer;
+  k: byte;
+  sum: double;
+  temp: array[0..2, 0..2] of double;
+const
+  MascaraSuavizado: array[0..2, 0..2] of single = (
+    (1 / 8, 1 / 8, 1 / 8),
+    (1 / 8, 1 / 8, 1 / 8),
+    (1 / 8, 1 / 8, 1 / 8)
+    );
+begin
+  //SetLength(AuxMAT, ALTO, ANCHO, 3);
+  //for i := 1 to ALTO - 2 do
+  //begin
+  //  for j := 1 to ANCHO - 2 do
+  //  begin
+  //    for k := 0 to 2 do
+  //    begin
+  //      sum := 0;
+  //      for x := -1 to 1 do
+  //      begin
+  //        for y := -1 to 1 do
+  //        begin
+  //          if (x <> 0) or (y <> 0) then
+  //          begin
+  //            temp[x + 1, y + 1] :=
+  //              MAT[i + x, j + y, k] * MascaraSuavizado[x + 1, y + 1];
+  //            sum := sum + temp[x + 1, y + 1];
+  //          end;
+  //        end;
+  //      end;
+  //      AuxMAT[i, j, k] := Round(sum);
+  //    end;
+  //  end;
+  //end;
+  //copMAM(MAT, AuxMAT);
+  //copMB(ALTO, ANCHO, MAT, BMAP);
+  //Image1.Picture.Assign(BMAP);
+  //histograma(MAT);
+end;
+
+procedure TForm1.tanhyper(alphaval: double);
+var
+  i, j: integer;
+  k: byte;
+  Value: double;
+begin
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to ANCHO - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        Value := 255 / 2 * (1 + TanH(alphaval * (MAT[i, j, k] - (255 / 2))));
+        MAT[i, j, k] := Round(Value);
+      end;
+    end;
+  end;
+end;
+
+procedure TForm1.TanhipClick(Sender: TObject);
+begin
+  Form4.ComboBox1.Text := 'Valor de alfa';
+  Form4.ShowModal;
+  if Form4.ModalResult = mrOk then
+  begin
+    tanhyper(Form4.gamval);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    histograma(MAT);
+  end;
+end;
+
+procedure TForm1.ToolButton10Click(Sender: TObject);
+begin
+  histograma(MAT);
+end;
+
+procedure TForm1.ToolButton11Click(Sender: TObject);
 var
   i, j, x, y: integer;
   k: byte;
@@ -542,35 +625,184 @@ begin
   histograma(MAT);
 end;
 
-procedure TForm1.tanhyper(alphaval: double);
-var
-  i, j: integer;
-  k: byte;
-  Value: double;
+procedure TForm1.ToolButton12Click(Sender: TObject);
 begin
-  for i := 0 to ALTO - 1 do
+
+end;
+
+procedure TForm1.ToolButton13Click(Sender: TObject);
+begin
+  pattern();
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
+end;
+
+procedure TForm1.ToolButton1Click(Sender: TObject);
+begin
+  if OpenPictureDialog1.Execute then
   begin
-    for j := 0 to ANCHO - 1 do
+    Image1.Enabled := True;
+    pathFile := OpenPictureDialog1.FileName;
+    BMAP.LoadFromFile(pathFile);
+    ALTO := BMAP.Height;
+    ANCHO := BMAP.Width;
+
+    if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
     begin
-      for k := 0 to 2 do
-      begin
-        Value := 255 / 2 * (1 + TanH(alphaval * (MAT[i, j, k] - (255 / 2))));
-        MAT[i, j, k] := Round(Value);
-      end;
+      BMAP.PixelFormat := pf24bit;
     end;
+
+    StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
+    SetLength(MAT, ALTO, ANCHO, 3);
+    copBM(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);  //visulaizar imagen
+    histograma(MAT);
+    ToolButton2.Enabled:= True;
+    ToolButton3.Enabled:= True;
+    ToolButton4.Enabled:= True;
+    ToolButton5.Enabled:= True;
+    ToolButton6.Enabled:= True;
+    ToolButton7.Enabled:= True;
+    ToolButton8.Enabled:= True;
+    ToolButton9.Enabled:= True;
+    ToolButton10.Enabled:= True;
+    ToolButton11.Enabled:= True;
+    ToolButton12.Enabled:= True;
+    ToolButton13.Enabled:= True;
+    MenuItem3.Enabled:=True;
+    MenuItem6.Enabled:=True;
+    Morfologicos.Enabled:=True;
   end;
 end;
 
-procedure TForm1.TanhipClick(Sender: TObject);
+procedure TForm1.ToolButton2Click(Sender: TObject);
 begin
-  Form4.ComboBox1.Text := 'Valor de alfa';
+  BMAP.LoadFromFile(pathFile);
+  ALTO := BMAP.Height;
+  ANCHO := BMAP.Width;
+  if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
+  begin
+    BMAP.PixelFormat := pf24bit;
+  end;
+  counter := 0;
+  grades := 0.0;
+  StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
+  SetLength(MAT, ALTO, ANCHO, 3);
+  copBM(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);  //visulaizar imagen
+  histograma(MAT);
+end;
+
+procedure TForm1.ToolButton3Click(Sender: TObject);
+begin
+  escala_de_grises();
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+  histograma(MAT);
+end;
+
+procedure TForm1.ToolButton5Click(Sender: TObject);
+begin
+  if counter <= 3 then
+  begin
+    SetLength(AuxMAT, 0, 0, 0);
+    grades := 90.0;
+    RotateImage(MAT, AuxMAT, grades);
+    copMAM(MAT, AuxMAT);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    if counter = 3 then
+    begin
+      grades := 0.0;
+      counter := -1;
+    end;
+  end;
+  counter := counter + 1;
+end;
+
+procedure TForm1.ToolButton6Click(Sender: TObject);
+begin
+  if counter >= -3 then
+  begin
+    SetLength(AuxMAT, 0, 0, 0);
+    grades := -90.0;
+    RotateImage(MAT, AuxMAT, grades);
+    copMAM(MAT, AuxMAT);
+    copMB(ALTO, ANCHO, MAT, BMAP);
+    Image1.Picture.Assign(BMAP);
+    if counter = -3 then
+    begin
+      grades := 0.0;
+      counter := 1;
+    end;
+  end;
+  counter := counter - 1;
+end;
+
+procedure TForm1.ToolButton7Click(Sender: TObject);
+var
+  i, j, k, midpoin, auxval: integer;
+begin
+  copMAM(AuxMAT, MAT);
+  midpoin := ANCHO div 2;
+  for i := 0 to ALTO - 1 do
+  begin
+    for j := 0 to midpoin - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        MAT[i, (midpoin - 1 - j), k] := AuxMAT[i, j, k];
+      end;
+    end;
+  end;
+  for i := 0 to ALTO - 1 do
+  begin
+    auxval := 0;
+    for j := midpoin to ANCHO - 1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        MAT[i, (ANCHO - 1 - auxval), k] := AuxMAT[i, j, k];
+      end;
+      auxval := auxval + 1;
+    end;
+  end;
+  copMB(ALTO, ANCHO, MAT, BMAP);
+  Image1.Picture.Assign(BMAP);
+end;
+
+procedure TForm1.ToolButton8Click(Sender: TObject);
+begin
   Form4.ShowModal;
   if Form4.ModalResult = mrOk then
   begin
-    tanhyper(Form4.gamval);
+    gammaFilter(Form4.gamval);
     copMB(ALTO, ANCHO, MAT, BMAP);
     Image1.Picture.Assign(BMAP);
     histograma(MAT);
+  end;
+end;
+
+procedure TForm1.ToolButton9Click(Sender: TObject);
+begin
+  if ALTO = ANCHO then
+  begin
+    Form3.TrackBar1.Min := 3;
+    Form3.TrackBar1.Max := ALTO;
+    Form3.ShowModal;
+    if Form3.ModalResult = mrOk then
+    begin
+      escala_de_grises();
+      binarizacionDi();
+      copMB(ALTO, ANCHO, MAT, BMAP);
+      Image1.Picture.Assign(BMAP);
+      histograma(MAT);
+    end;
+  end
+  else
+  begin
+    ShowMessage('La imagen no tiene las mismas dimensiones en alto y ancho :(');
   end;
 end;
 
@@ -581,14 +813,14 @@ end;
 
 procedure TForm1.GammaClick(Sender: TObject);
 begin
-  Form4.ShowModal;
-  if Form4.ModalResult = mrOk then
-  begin
-    gammaFilter(Form4.gamval);
-    copMB(ALTO, ANCHO, MAT, BMAP);
-    Image1.Picture.Assign(BMAP);
-    histograma(MAT);
-  end;
+  //Form4.ShowModal;
+  //if Form4.ModalResult = mrOk then
+  //begin
+  //  gammaFilter(Form4.gamval);
+  //  copMB(ALTO, ANCHO, MAT, BMAP);
+  //  Image1.Picture.Assign(BMAP);
+  //  histograma(MAT);
+  //end;
 end;
 
 procedure TForm1.escala_de_grises();
@@ -675,10 +907,10 @@ end;
 
 procedure TForm1.FiltroGrisesClick(Sender: TObject);
 begin
-  escala_de_grises();
-  copMB(ALTO, ANCHO, MAT, BMAP);
-  Image1.Picture.Assign(BMAP);
-  histograma(MAT);
+  //escala_de_grises();
+  //copMB(ALTO, ANCHO, MAT, BMAP);
+  //Image1.Picture.Assign(BMAP);
+  //histograma(MAT);
 end;
 
 procedure TForm1.copMAM(var OriMAT: MATRGB; var AuxiMAT: MATRGB);
@@ -743,21 +975,21 @@ end;
 
 procedure TForm1.DerClick(Sender: TObject);
 begin
-  if counter <= 3 then
-  begin
-    SetLength(AuxMAT, 0, 0, 0);
-    grades := 90.0;
-    RotateImage(MAT, AuxMAT, grades);
-    copMAM(MAT, AuxMAT);
-    copMB(ALTO, ANCHO, MAT, BMAP);
-    Image1.Picture.Assign(BMAP);
-    if counter = 3 then
-    begin
-      grades := 0.0;
-      counter := -1;
-    end;
-  end;
-  counter := counter + 1;
+  //if counter <= 3 then
+  //begin
+  //  SetLength(AuxMAT, 0, 0, 0);
+  //  grades := 90.0;
+  //  RotateImage(MAT, AuxMAT, grades);
+  //  copMAM(MAT, AuxMAT);
+  //  copMB(ALTO, ANCHO, MAT, BMAP);
+  //  Image1.Picture.Assign(BMAP);
+  //  if counter = 3 then
+  //  begin
+  //    grades := 0.0;
+  //    counter := -1;
+  //  end;
+  //end;
+  //counter := counter + 1;
 end;
 
 procedure TForm1.binarize();
@@ -796,9 +1028,7 @@ end;
 procedure TForm1.erosionate();
 var
   i, j, x, y: integer;
-  k: byte;
   sum: byte;
-  //temp: array[0..2, 0..2] of double;
 const
   Estructura: array[0..2, 0..2] of Byte = (
     (0, 0, 0),
@@ -827,26 +1057,6 @@ begin
           MAT[i, j, 0] := 0;
           MAT[i, j, 1] := 0;
           MAT[i, j, 2] := 0;
-          //ShowMessage('Encontro coincidencia');
-          //for x := -1 to 1 do
-          //begin
-          //  for y := -1 to 1 do
-          //  begin
-          //    for k := 0 to 2 do
-          //    begin
-          //      if (x = 0) and (y = 0) then
-          //      begin
-          //        //ShowMessage(IntToStr(i + x));
-          //        //ShowMessage(IntToStr(j + y));
-          //        MAT[i + x, j + y, k] := 0;
-          //      end
-          //      else
-          //      begin
-          //        MAT[i + x, j + y, k] := 255
-          //      end;
-          //    end;
-          //  end;
-          //end;
         end
         else
         begin
@@ -881,43 +1091,43 @@ end;
 
 procedure TForm1.binarizacionClick(Sender: TObject);
 begin
-  if ALTO = ANCHO then
-  begin
-    Form3.TrackBar1.Min := 3;
-    Form3.TrackBar1.Max := ALTO;
-    Form3.ShowModal;
-    if Form3.ModalResult = mrOk then
-    begin
-      escala_de_grises();
-      binarizacionDi();
-      copMB(ALTO, ANCHO, MAT, BMAP);
-      Image1.Picture.Assign(BMAP);
-      histograma(MAT);
-    end;
-  end
-  else
-  begin
-    ShowMessage('La imagen no tiene las mismas dimensiones en alto y ancho :(');
-  end;
+  //if ALTO = ANCHO then
+  //begin
+  //  Form3.TrackBar1.Min := 3;
+  //  Form3.TrackBar1.Max := ALTO;
+  //  Form3.ShowModal;
+  //  if Form3.ModalResult = mrOk then
+  //  begin
+  //    escala_de_grises();
+  //    binarizacionDi();
+  //    copMB(ALTO, ANCHO, MAT, BMAP);
+  //    Image1.Picture.Assign(BMAP);
+  //    histograma(MAT);
+  //  end;
+  //end
+  //else
+  //begin
+  //  ShowMessage('La imagen no tiene las mismas dimensiones en alto y ancho :(');
+  //end;
 end;
 
 procedure TForm1.IzqClick(Sender: TObject);
 begin
-  if counter >= -3 then
-  begin
-    SetLength(AuxMAT, 0, 0, 0);
-    grades := -90.0;
-    RotateImage(MAT, AuxMAT, grades);
-    copMAM(MAT, AuxMAT);
-    copMB(ALTO, ANCHO, MAT, BMAP);
-    Image1.Picture.Assign(BMAP);
-    if counter = -3 then
-    begin
-      grades := 0.0;
-      counter := 1;
-    end;
-  end;
-  counter := counter - 1;
+  //if counter >= -3 then
+  //begin
+  //  SetLength(AuxMAT, 0, 0, 0);
+  //  grades := -90.0;
+  //  RotateImage(MAT, AuxMAT, grades);
+  //  copMAM(MAT, AuxMAT);
+  //  copMB(ALTO, ANCHO, MAT, BMAP);
+  //  Image1.Picture.Assign(BMAP);
+  //  if counter = -3 then
+  //  begin
+  //    grades := 0.0;
+  //    counter := 1;
+  //  end;
+  //end;
+  //counter := counter - 1;
 end;
 
 procedure TForm1.lbpSTDTHRES();
