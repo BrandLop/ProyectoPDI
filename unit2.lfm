@@ -1,18 +1,19 @@
 object Form2: TForm2
-  Left = 366
+  Left = 713
   Height = 328
-  Top = 253
+  Top = 270
   Width = 600
   Caption = 'Histograma'
   ClientHeight = 328
   ClientWidth = 600
   Position = poScreenCenter
-  LCLVersion = '2.0.12.0'
+  LCLVersion = '2.2.6.0'
   object Chart1: TChart
     Left = 0
     Height = 307
     Top = 0
     Width = 595
+    AllowPanning = False
     AllowZoom = False
     AxisList = <    
       item
@@ -42,7 +43,6 @@ object Form2: TForm2
     Title.Text.Strings = (
       'TAChart'
     )
-    Enabled = False
     OnMouseDown = Chart1MouseDown
     OnMouseMove = Chart1MouseMove
     object Chart1LineSeries1: TLineSeries
@@ -60,8 +60,8 @@ object Form2: TForm2
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 23
-    Top = 305
+    Height = 21
+    Top = 307
     Width = 600
     Panels = <    
       item
@@ -72,5 +72,6 @@ object Form2: TForm2
         Width = 50
       end>
     SimplePanel = False
+    OnMouseMove = Chart1MouseMove
   end
 end

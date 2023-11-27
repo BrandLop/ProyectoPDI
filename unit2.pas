@@ -35,22 +35,13 @@ type
 var
   Form2: TForm2;
   ClickEnabled: boolean = False;
-  counter: byte = 0;
+  CounterL: byte = 0;
+  counterR: byte = 0;
 
 implementation
 
 {$R *.lfm}
 
-procedure TForm2.Chart1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
-const
-  min = 9;
-  max = 580;
-  new_min = 0;
-  new_max = 255;
-begin
-  valNorm := Round((X - min) / (max - min) * (new_max - new_min) + new_min);
-  StatusBar1.Panels[1].Text := IntToStr(valNorm);
-end;
 
 procedure TForm2.Chart1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: integer);
@@ -59,25 +50,38 @@ begin
   begin
     if Button = mbLeft then
     begin
-      counter := counter + 1;
+      CounterL := 1;
       nminval := valNorm;
       ShowMessage('Nuevo valor minimo: ' + IntToStr(nminval));
     end;
     if Button = mbRight then
     begin
-      counter := counter + 1;
+      counterR := 1;
       nmaxval := valNorm;
       ShowMessage('Nuevo valor máximo: ' + IntToStr(nmaxval));
     end;
-    if counter = 2 then
+    if (CounterL = 1) and (counterR = 1) then
     begin
       resp := MessageDlg(
         '¿Desea realizar la reducción de contraste con los valores seleccionados?', mtConfirmation, mbOKCancel, 0);
-      counter := 0;
+      counterR := 0;
+      CounterL := 0;
       Self.Close;
     end;
   end;
 
+end;
+
+procedure TForm2.Chart1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: integer);
+const
+  min = 9;
+  max = 580;
+  new_min = 0;
+  new_max = 255;
+begin
+  valNorm := Round((X - min) / (max - min) * (new_max - new_min) + new_min);
+  StatusBar1.Panels[1].Text := IntToStr(valNorm);
 end;
 
 procedure TForm2.DrawHistogramm(mat: MATRGB; w, h: integer);
