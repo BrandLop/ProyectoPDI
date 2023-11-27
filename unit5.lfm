@@ -3,7 +3,7 @@ object Form5: TForm5
   Height = 600
   Top = 235
   Width = 892
-  Caption = 'Visuvisualizar Imagen'
+  Caption = 'Visualizar Imagen'
   ClientHeight = 600
   ClientWidth = 892
   LCLVersion = '2.2.6.0'
