@@ -30,12 +30,14 @@ type
     Erosion: TMenuItem;
     Morfologicos: TMenuItem;
     ReduxContrast: TMenuItem;
+    SavePictureDialog1: TSavePictureDialog;
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     ToolButton12: TToolButton;
     ToolButton13: TToolButton;
+    ToolButton14: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
@@ -59,8 +61,12 @@ type
     procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GammaClick(Sender: TObject);
+    procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure binarizacionClick(Sender: TObject);
+    procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure IzqClick(Sender: TObject);
     procedure LBPSTDClick(Sender: TObject);
     procedure LBPTHRESHOLDClick(Sender: TObject);
@@ -79,15 +85,19 @@ type
     procedure ToolButton11Click(Sender: TObject);
     procedure ToolButton12Click(Sender: TObject);
     procedure ToolButton13Click(Sender: TObject);
+    procedure ToolButton14Click(Sender: TObject);
     procedure ToolButton1Click(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
     procedure ToolButton3Click(Sender: TObject);
+    procedure ToolButton4Click(Sender: TObject);
     procedure ToolButton5Click(Sender: TObject);
     procedure ToolButton6Click(Sender: TObject);
     procedure ToolButton7Click(Sender: TObject);
     procedure ToolButton8Click(Sender: TObject);
     procedure ToolButton9Click(Sender: TObject);
   private
+    xpoint: Integer;
+    ypoint: Integer;
   const
     Weights: array[0..2, 0..2] of byte = (
       (1, 2, 4),
@@ -138,12 +148,20 @@ var
   HistR, HistG, HistB: array[0..255] of integer;
   Form1: TForm1;
   ALTO, ANCHO, NewAncho, NewAlto: integer; //dimensiones de la imagen
-  MAT, AuxMAT: MATRGB;
+  MAT, AuxMAT, AuxMAT2: MATRGB;
   BMAP, BMAP2: Tbitmap;  //objeto orientado a directivas/metodos para .BMP
   pathFile: string;
   counter: shortint = 0;
   grades: double = 0.0;
   colorscheme: array[0..255] of array[0..2] of byte;
+  P1, P2: TPoint;
+  ClickEnabled: boolean = False;
+  CounterL: byte = 0;
+  counterR: byte = 0;
+  countL: byte = 0;
+  countR: byte = 0;
+  firsterosion: Boolean = True;
+  points: array[0..3] of Integer;
 
 implementation
 
@@ -201,9 +219,9 @@ var
   k: byte;
 begin
   //filtro negativo
-  for i := 0 to ALTO - 1 do
+  for i := P1.Y to P2.Y - 1 do
   begin
-    for j := 0 to ANCHO - 1 do
+    for j := P1.X to P2.X - 1 do
     begin
       for k := 0 to 2 do
       begin
@@ -238,9 +256,9 @@ var
   r, g, b, x, y, z: double;
 begin
   //cambio de modelo de color
-  for i := 0 to ALTO - 1 do
+  for i := P1.Y to P2.Y - 1 do
   begin
-    for j := 0 to ANCHO - 1 do
+    for j := P1.X to P2.X - 1 do
     begin
       //normalizacion de valores entre 0 y 1
       r := MAT[i, j, 0] / 255;
@@ -341,11 +359,9 @@ begin
     maxR := MAT[0, 0, 0];
     maxG := MAT[0, 0, 1];
     maxB := MAT[0, 0, 2];
-    ShowMessage(IntToStr(Form2.nmaxval));
-    showMessage(IntToStr(Form2.nminval));
-    for i := 0 to ALTO - 1 do
+    for i := P1.Y to P2.Y - 1 do
     begin
-      for j := 0 to ANCHO - 1 do
+      for j := P1.X to P2.X - 1 do
       begin
         if MAT[i, j, 0] > maxR then
         begin
@@ -373,9 +389,9 @@ begin
         end;
       end;
     end;
-    for i := 0 to ALTO - 1 do
+    for i := P1.Y to P2.Y - 1 do
     begin
-      for j := 0 to ANCHO - 1 do
+      for j := P1.X to P2.X - 1 do
       begin
         MAT[i, j, 0] := Round((Form2.nmaxval - Form2.nminval) /
           (maxR - minR) * (MAT[i, j, 0] - minR) + Form2.nminval);
@@ -551,9 +567,9 @@ var
   k: byte;
   Value: double;
 begin
-  for i := 0 to ALTO - 1 do
+  for i := P1.Y to P2.Y - 1 do
   begin
-    for j := 0 to ANCHO - 1 do
+    for j := P1.X to P2.X - 1 do
     begin
       for k := 0 to 2 do
       begin
@@ -595,10 +611,11 @@ const
     (1 / 8, 1 / 8, 1 / 8)
     );
 begin
-  SetLength(AuxMAT, ALTO, ANCHO, 3);
-  for i := 1 to ALTO - 2 do
+  //SetLength(AuxMAT, ALTO, ANCHO, 3);
+  copMAM(AuxMAT, MAT);
+  for i := P1.Y + 1 to P2.Y - 2 do
   begin
-    for j := 1 to ANCHO - 2 do
+    for j := P1.X + 1 to P2.X - 2 do
     begin
       for k := 0 to 2 do
       begin
@@ -627,7 +644,10 @@ end;
 
 procedure TForm1.ToolButton12Click(Sender: TObject);
 begin
-
+  if SavePictureDialog1.Execute then
+  begin
+    BMAP.SaveToFile(SavePictureDialog1.FileName);
+  end;
 end;
 
 procedure TForm1.ToolButton13Click(Sender: TObject);
@@ -636,6 +656,17 @@ begin
   copMB(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);
   histograma(MAT);
+end;
+
+procedure TForm1.ToolButton14Click(Sender: TObject);
+begin
+  ClickEnabled:=False;
+  P1.X:=0;
+  P1.Y:=0;
+  P2.X:=ANCHO;
+  P2.Y:=ALTO;
+  StatusBar1.Panels[10].Text := '';
+  StatusBar1.Panels[11].Text := '';
 end;
 
 procedure TForm1.ToolButton1Click(Sender: TObject);
@@ -652,6 +683,13 @@ begin
     begin
       BMAP.PixelFormat := pf24bit;
     end;
+
+    P1.X:=0;
+    P1.Y:=0;
+    P2.X:=ANCHO;
+    P2.Y:=ALTO;
+
+    firsterosion:=True;
 
     StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
     SetLength(MAT, ALTO, ANCHO, 3);
@@ -670,6 +708,7 @@ begin
     ToolButton11.Enabled:= True;
     ToolButton12.Enabled:= True;
     ToolButton13.Enabled:= True;
+    ToolButton14.Enabled:= True;
     MenuItem3.Enabled:=True;
     MenuItem6.Enabled:=True;
     Morfologicos.Enabled:=True;
@@ -700,6 +739,12 @@ begin
   copMB(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);
   histograma(MAT);
+end;
+
+procedure TForm1.ToolButton4Click(Sender: TObject);
+begin
+  ClickEnabled:=True;
+  StatusBar1.Panels[10].Text := 'Modo Selección'
 end;
 
 procedure TForm1.ToolButton5Click(Sender: TObject);
@@ -785,11 +830,15 @@ begin
 end;
 
 procedure TForm1.ToolButton9Click(Sender: TObject);
+var
+  dist1,dist2: Double;
 begin
-  if ALTO = ANCHO then
+  dist1 := sqrt((P2.X - P1.X) * (P2.X - P1.X) + (P1.Y - P1.Y) * (P1.Y - P1.Y));
+  dist2 := sqrt((P1.X - P1.X) * (P1.X - P1.X) + (P2.Y - P1.Y) * (P2.Y - P1.Y));
+  if dist1 = dist2 then
   begin
     Form3.TrackBar1.Min := 3;
-    Form3.TrackBar1.Max := ALTO;
+    Form3.TrackBar1.Max := Round(dist1);
     Form3.ShowModal;
     if Form3.ModalResult = mrOk then
     begin
@@ -823,15 +872,44 @@ begin
   //end;
 end;
 
+procedure TForm1.Image1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if ClickEnabled then
+  begin
+    if Button = mbLeft then
+    begin
+      points[0]:=X;
+      points[1]:=Y;
+      CounterL:=1;
+    end;
+    if Button = mbRight then
+    begin
+      points[2]:=X;
+      points[3]:=Y;
+      counterR:=1;
+    end;
+    if (CounterL = 1) and (counterR = 1) then
+    begin
+      P1.X:=Min(points[0],points[2]);
+      P2.X:=Max(points[0],points[2]);
+      P1.Y:=Min(points[1],points[3]);
+      P2.Y:=Max(points[1],points[3]);
+      CounterL := 0;
+      counterR := 0;
+    end;
+  end;
+end;
+
 procedure TForm1.escala_de_grises();
 var
   i, j: integer;
   k: byte;
 begin
   //filtro escala de grises, promedio de los valores de los canales R=G=B
-  for i := 0 to ALTO - 1 do
+  for i := P1.Y to P2.Y - 1 do
   begin
-    for j := 0 to ANCHO - 1 do
+    for j := P1.X to P2.X - 1 do
     begin
       k := (MAT[i, j, 0] + MAT[i, j, 1] + MAT[i, j, 2]) div 3;
       MAT[i, j, 0] := k;
@@ -846,26 +924,26 @@ var
   sumatoria, threshold, i, j, k, l, rsize, m: integer;
 begin
   m := Form3.rsize;
-  i := 0;
-  while i <= ALTO - 1 do
+  i := P1.Y;
+  while i <= P2.Y - 1 do
   begin
-    j := 0;
-    while j <= ALTO - 1 do
+    j := P1.X;
+    while j <= P2.Y - 1 do
     begin
       sumatoria := 0;
       Rsize := 0;
-      for k := i to Min(i + m - 1, ALTO - 1) do
+      for k := i to Min(i + m - 1, P2.Y - 1) do
       begin
-        for l := j to Min(j + m - 1, ALTO - 1) do
+        for l := j to Min(j + m - 1, P2.Y - 1) do
         begin
           sumatoria := sumatoria + MAT[k, l, 0];
           Rsize := Rsize + 1;
         end;
       end;
       threshold := sumatoria div Rsize;
-      for k := i to Min(i + m - 1, ALTO - 1) do
+      for k := i to Min(i + m - 1, P2.Y - 1) do
       begin
-        for l := j to Min(j + m - 1, ALTO - 1) do
+        for l := j to Min(j + m - 1, P2.Y - 1) do
         begin
           if MAT[k, l, 0] > threshold then
           begin
@@ -892,9 +970,9 @@ var
   i, j, k: integer;
   res: double;
 begin
-  for i := 0 to ALTO - 1 do
+  for i := P1.Y to P2.Y - 1 do
   begin
-    for j := 0 to ANCHO - 1 do
+    for j := P1.X to P2.X - 1 do
     begin
       for k := 0 to 2 do
       begin
@@ -1031,12 +1109,18 @@ var
   sum: byte;
 const
   Estructura: array[0..2, 0..2] of Byte = (
+    (1, 0, 1),
     (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0)
+    (1, 0, 1)
     );
 begin
-  copMAM(AuxMAT, MAT);
+  //copMAM(AuxMAT, MAT);
+  if firsterosion then
+  begin
+    SetLength(AuxMAT, ALTO, ANCHO, 3);
+    copMAM(AuxMAT2, MAT);
+    firsterosion:=False;
+  end;
   for i := 1 to ALTO - 2 do
   begin
     for j := 1 to ANCHO - 2 do
@@ -1046,41 +1130,44 @@ begin
         begin
           for y := -1 to 1 do
           begin
-            if AuxMAT[i + x, j + y, 0] = Estructura[x + 1, y + 1] then
+            if (AuxMAT2[i + x, j + y, 0] = Estructura[x + 1, y + 1]) and (Estructura[x + 1, y + 1] = 0)  then
             begin
               sum:= sum + 1;
             end;
           end;
         end;
-        if sum = 9 then
+        if sum = 5 then
         begin
-          MAT[i, j, 0] := 0;
-          MAT[i, j, 1] := 0;
-          MAT[i, j, 2] := 0;
+          AuxMAT[i, j, 0] := 0;
+          AuxMAT[i, j, 1] := 0;
+          AuxMAT[i, j, 2] := 0;
         end
         else
         begin
-          MAT[i, j, 0] := 255;
-          MAT[i, j, 1] := 255;
-          MAT[i, j, 2] := 255;
+          AuxMAT[i, j, 0] := 255;
+          AuxMAT[i, j, 1] := 255;
+          AuxMAT[i, j, 2] := 255;
         end;
     end;
   end;
+  copMAM(AuxMAT2, AuxMAT);
+  copMB(ALTO, ANCHO, AuxMAT, BMAP);
+  Form5.Image1.Picture.Assign(BMAP);
 end;
 
 procedure TForm1.ErosionClick(Sender: TObject);
 begin
   binarize();
   erosionate();
-  copMB(ALTO, ANCHO, MAT, BMAP);
-  Image1.Picture.Assign(BMAP);
-  histograma(MAT);
+  //copMB(ALTO, ANCHO, MAT, BMAP);
+  //Image1.Picture.Assign(BMAP);
+  histograma(AuxMAT);
+  Form5.Show;
 end;
 
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 begin
   //al mover el mouse, indica las coordenadas X Y
-
   StatusBar1.Panels[1].Text := IntToStr(X);
   StatusBar1.Panels[2].Text := IntToStr(Y);
   StatusBar1.Panels[4].Text := IntToStr(MAT[y, x, 0]);
@@ -1111,6 +1198,31 @@ begin
   //end;
 end;
 
+procedure TForm1.Image1MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  if ClickEnabled then
+  begin
+    if Button = mbLeft then
+    begin
+      ShowMessage('Primer punto: ' + IntToStr(X) +', '+ IntToStr(Y));
+      countL:=1;
+    end;
+    if Button = mbRight then
+    begin
+      ShowMessage('Segundo punto: ' + IntToStr(X)+', '+ IntToStr(Y) );
+      countR:=1;
+    end;
+    if (countL = 1) and (countR = 1) then
+    begin
+      ShowMessage('Ahora puede aplicar ciertos filtros a la región seleccionada :)');
+      StatusBar1.Panels[11].Text := 'Región Selec: ' + IntToStr(P2.Y-P1.Y) + 'x'+ IntToStr(P2.X-P1.X);
+      countL:=0;
+      countR:=0;
+    end;
+  end;
+end;
+
 procedure TForm1.IzqClick(Sender: TObject);
 begin
   //if counter >= -3 then
@@ -1139,10 +1251,11 @@ var
   values: array[0..7] of double;
   temp: array[0..2, 0..2] of byte;
 begin
-  SetLength(MATColor, ALTO, ANCHO, 3);
-  for i := 1 to ALTO - 2 do
+  copMAM(MATColor, MAT);
+  copMAM(AuxMAT, MAT);
+  for i := P1.Y + 1 to P2.Y - 2 do
   begin
-    for j := 1 to ANCHO - 2 do
+    for j := P1.X + 1 to P2.X - 2 do
     begin
       k := 0;
       sum := 0;
@@ -1205,9 +1318,9 @@ var
   i, j: integer;
   k: byte;
 begin
-  for i := 0 to ALTO - 2 do
+  for i := P1.Y to P2.Y - 2 do
   begin
-    for j := 0 to ANCHO - 2 do
+    for j := P1.X to P2.X - 2 do
     begin
       for k := 0 to 2 do
       begin
@@ -1223,7 +1336,7 @@ procedure TForm1.LBPSTDClick(Sender: TObject);
 begin
   generatecolscheme();
   escala_de_grises();
-  SetLength(AuxMAT, ALTO, ANCHO, 3);
+  //SetLength(AuxMAT, ALTO, ANCHO, 3);
   lbpSTDTHRES();
   copMAM(MAT, AuxMAT);
   copMB(ALTO, ANCHO, MAT, BMAP);
@@ -1239,10 +1352,11 @@ var
   MATColor: MATRGB;
   temp: array[0..2, 0..2] of byte;
 begin
-  SetLength(MATColor, ALTO, ANCHO, 3);
-  for i := 1 to ALTO - 2 do
+  copMAM(MATColor, MAT);
+  copMAM(AuxMAT, MAT);
+  for i := P1.Y + 1 to P2.Y - 2 do
   begin
-    for j := 1 to ANCHO - 2 do
+    for j := P1.X + 1 to P2.X - 2 do
     begin
       max := 0;
       sum := 0;
@@ -1305,7 +1419,7 @@ procedure TForm1.LBPTHRESHOLDClick(Sender: TObject);
 begin
   generatecolscheme();
   escala_de_grises();
-  SetLength(AuxMAT, ALTO, ANCHO, 3);
+  //SetLength(AuxMAT, ALTO, ANCHO, 3);
   lbpMaxValue();
   copMAM(MAT, AuxMAT);
   copMB(ALTO, ANCHO, MAT, BMAP);
