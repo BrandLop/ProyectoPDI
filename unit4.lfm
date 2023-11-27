@@ -1,38 +1,38 @@
 object Form4: TForm4
-  Left = 464
+  Left = 702
   Height = 126
-  Top = 233
+  Top = 303
   Width = 260
   Caption = 'Form4'
   ClientHeight = 126
   ClientWidth = 260
   Position = poScreenCenter
-  LCLVersion = '2.0.12.0'
+  LCLVersion = '2.2.6.0'
   object ComboBox1: TComboBox
     Left = 64
-    Height = 23
+    Height = 35
     Top = 32
     Width = 148
-    ItemHeight = 15
+    ItemHeight = 0
     Items.Strings = (
-      '0,02'
-      '0,04'
-      '0,06'
-      '0,08'
+      '0.02'
+      '0.04'
+      '0.06'
+      '0.08'
       '1'
-      '1,2'
-      '1,4'
-      '1,6'
-      '1,8'
+      '1.2'
+      '1.4'
+      '1.6'
+      '1.8'
       '2'
-      '2,3'
-      '2,6'
+      '2.3'
+      '2.6'
       '3'
-      '3,3'
-      '3,6'
+      '3.3'
+      '3.6'
       '4'
-      '4,3'
-      '4,6'
+      '4.3'
+      '4.6'
       '5'
     )
     OnChange = ComboBox1Change
@@ -41,9 +41,9 @@ object Form4: TForm4
   end
   object Label1: TLabel
     Left = 32
-    Height = 22
+    Height = 27
     Top = 0
-    Width = 192
+    Width = 199
     Caption = 'Seleccione una opción'
     Font.Height = -19
     Font.Name = 'Sans'
