@@ -16,6 +16,10 @@ type
 
   MATRGB = array of array of array of byte;
   //Tri-dimensional para almacenar contenido de imagen
+  TNumeroComplejo = record
+    Re: Double;
+    Im: Double;
+  end;
 
   TForm1 = class(TForm)
     ColorDialog1: TColorDialog;
@@ -28,6 +32,8 @@ type
     LBPSTD: TMenuItem;
     Bordes: TMenuItem;
     Erosion: TMenuItem;
+    ProgressBar1: TProgressBar;
+    Salir: TMenuItem;
     Morfologicos: TMenuItem;
     ReduxContrast: TMenuItem;
     SavePictureDialog1: TSavePictureDialog;
@@ -38,6 +44,7 @@ type
     ToolButton12: TToolButton;
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
+    ToolButton15: TToolButton;
     ToolButton2: TToolButton;
     ToolButton3: TToolButton;
     ToolButton4: TToolButton;
@@ -49,7 +56,6 @@ type
     Tanhip: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
-    Abrir_Scanline: TMenuItem;
     FiltroNegativo: TMenuItem;
     MenuItem6: TMenuItem;
     colorxyz: TMenuItem;
@@ -71,12 +77,14 @@ type
     procedure HistogramaaClick(Sender: TObject);
     procedure BordesClick(Sender: TObject);
     procedure ReduxContrastClick(Sender: TObject);
+    procedure SalirClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
     procedure ToolButton10Click(Sender: TObject);
     procedure ToolButton11Click(Sender: TObject);
     procedure ToolButton12Click(Sender: TObject);
     procedure ToolButton13Click(Sender: TObject);
     procedure ToolButton14Click(Sender: TObject);
+    procedure ToolButton15Click(Sender: TObject);
     procedure ToolButton1Click(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
     procedure ToolButton3Click(Sender: TObject);
@@ -133,6 +141,9 @@ type
     procedure generatecolscheme();
     procedure erosionate();
     procedure binarize();
+    procedure TFourier();
+    procedure espectroFou();
+    procedure viewEspectro();
   end;
 
 var
@@ -153,6 +164,8 @@ var
   countR: byte = 0;
   firsterosion: boolean = True;
   points: array[0..3] of integer;
+  FMAT: array of array of TNumeroComplejo;
+  magnitudes: array of array of Double;
 
 implementation
 
@@ -381,6 +394,11 @@ begin
   Form2.Caption := 'Histograma';
 end;
 
+procedure TForm1.SalirClick(Sender: TObject);
+begin
+  Close;
+end;
+
 procedure TForm1.generatecolscheme();
 var
   i: integer;
@@ -543,6 +561,99 @@ begin
   StatusBar1.Panels[11].Text := '';
 end;
 
+procedure TForm1.TFourier();
+var
+  n,m,u,v,ut,vt: Integer;
+  sumReal, sumIm, phiu, phiv, cosw, senw, s :  Real;
+begin
+  //factor escalar común.
+  s := 1/sqrt(ANCHO * ALTO);
+  for u:=0 to ALTO-1 do
+  begin
+    for v:=0 to ANCHO-1 do
+    begin
+      sumReal := 0;
+      sumIm := 0;
+      ut := u - floor(ALTO/2);
+      vt := v - floor(ANCHO/2);
+      //factores comunes
+      phiu := 2 * Pi * ut/ALTO;
+      phiv := 2 * Pi * vt/ANCHO;
+      for n:=0 to ALTO-1 do
+      begin
+        for m:=0 to ANCHO-1 do
+        begin
+          cosw := cos(phiu*n + phiv*m);
+          senw := sin(phiu*n + phiv*m);
+          sumReal := sumReal + MAT[n,m,0] * cosw + MAT[n,m,0] * senw;
+          sumIm := sumIm + MAT[n,m,0] * cosw - MAT[n,m,0] * senw;
+        end;
+      end;
+      FMAT[u,v].Re := sumReal * s;
+      FMAT[u,v].Im := sumIm * s;
+    end;
+  end;
+  ProgressBar1.Position:=100;
+end;
+
+procedure TForm1.espectroFou();
+var
+  u,v: Integer;
+  maxVal, minVal: Double;
+  loga: double;
+begin
+  maxVal := -MaxDouble;
+  minVal := MaxDouble;
+  for u:=0 to ALTO-1 do
+  begin
+    for v:=0 to ANCHO-1 do
+    begin
+      magnitudes[u,v] := Sqrt(sqr(FMAT[u,v].Re)+ sqr(FMAT[u,v].Im));
+      maxVal := Max(maxVal, magnitudes[u,v]);
+      minVal := Min(minVal, magnitudes[u,v]);
+    end;
+  end;
+  for u:=0 to ALTO-1 do
+  begin
+    for v:=0 to ANCHO-1 do
+    begin
+      loga := ln(magnitudes[u,v] + 1);
+      magnitudes[u,v] := (loga - ln(loga + 1)) / (ln(maxVal + 1) - ln(minVal + 1)) * 255;
+    end;
+  end;
+end;
+
+procedure TForm1.viewEspectro();
+var
+  i, j: integer;
+  k: byte;
+  espectro: MATRGB;
+begin
+  SetLength(espectro, ALTO, ANCHO,3);
+  for i := 0 to ALTO-1 do
+  begin
+    for j := 0 to ANCHO-1 do
+    begin
+      for k := 0 to 2 do
+      begin
+        espectro[i,j,k] := Round(magnitudes[i,j]);
+      end;
+    end;
+  end;
+  copMB(ALTO, ANCHO, espectro, BMAP);
+  Form5.Image1.Picture.Assign(BMAP);
+end;
+
+procedure TForm1.ToolButton15Click(Sender: TObject);
+begin
+  SetLength(FMAT, ALTO, ANCHO);
+  SetLength(magnitudes, ALTO, ANCHO);
+  TFourier();
+  espectroFou();
+  viewEspectro();
+  Form5.ShowModal;
+end;
+
 procedure TForm1.ToolButton1Click(Sender: TObject);
 begin
   if OpenPictureDialog1.Execute then
@@ -583,9 +694,11 @@ begin
     ToolButton12.Enabled := True;
     ToolButton13.Enabled := True;
     ToolButton14.Enabled := True;
+    ToolButton15.Enabled := True;
     MenuItem3.Enabled := True;
     MenuItem6.Enabled := True;
     Morfologicos.Enabled := True;
+    ProgressBar1.Position:=0;
   end;
 end;
 
@@ -605,6 +718,7 @@ begin
   copBM(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);  //visulaizar imagen
   histograma(MAT);
+  ProgressBar1.Position:=0;
 end;
 
 procedure TForm1.ToolButton3Click(Sender: TObject);
