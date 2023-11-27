@@ -59,10 +59,10 @@ type
     procedure ErosionClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: integer);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+      Shift: TShiftState; X, Y: integer);
     procedure LBPSTDClick(Sender: TObject);
     procedure LBPTHRESHOLDClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
@@ -87,8 +87,8 @@ type
     procedure ToolButton8Click(Sender: TObject);
     procedure ToolButton9Click(Sender: TObject);
   private
-    xpoint: Integer;
-    ypoint: Integer;
+    xpoint: integer;
+    ypoint: integer;
   const
     Weights: array[0..2, 0..2] of byte = (
       (1, 2, 4),
@@ -151,8 +151,8 @@ var
   counterR: byte = 0;
   countL: byte = 0;
   countR: byte = 0;
-  firsterosion: Boolean = True;
-  points: array[0..3] of Integer;
+  firsterosion: boolean = True;
+  points: array[0..3] of integer;
 
 implementation
 
@@ -534,11 +534,11 @@ end;
 
 procedure TForm1.ToolButton14Click(Sender: TObject);
 begin
-  ClickEnabled:=False;
-  P1.X:=0;
-  P1.Y:=0;
-  P2.X:=ANCHO;
-  P2.Y:=ALTO;
+  ClickEnabled := False;
+  P1.X := 0;
+  P1.Y := 0;
+  P2.X := ANCHO;
+  P2.Y := ALTO;
   StatusBar1.Panels[10].Text := '';
   StatusBar1.Panels[11].Text := '';
 end;
@@ -558,34 +558,34 @@ begin
       BMAP.PixelFormat := pf24bit;
     end;
 
-    P1.X:=0;
-    P1.Y:=0;
-    P2.X:=ANCHO;
-    P2.Y:=ALTO;
+    P1.X := 0;
+    P1.Y := 0;
+    P2.X := ANCHO;
+    P2.Y := ALTO;
 
-    firsterosion:=True;
+    firsterosion := True;
 
     StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
     SetLength(MAT, ALTO, ANCHO, 3);
     copBM(ALTO, ANCHO, MAT, BMAP);
     Image1.Picture.Assign(BMAP);  //visulaizar imagen
     histograma(MAT);
-    ToolButton2.Enabled:= True;
-    ToolButton3.Enabled:= True;
-    ToolButton4.Enabled:= True;
-    ToolButton5.Enabled:= True;
-    ToolButton6.Enabled:= True;
-    ToolButton7.Enabled:= True;
-    ToolButton8.Enabled:= True;
-    ToolButton9.Enabled:= True;
-    ToolButton10.Enabled:= True;
-    ToolButton11.Enabled:= True;
-    ToolButton12.Enabled:= True;
-    ToolButton13.Enabled:= True;
-    ToolButton14.Enabled:= True;
-    MenuItem3.Enabled:=True;
-    MenuItem6.Enabled:=True;
-    Morfologicos.Enabled:=True;
+    ToolButton2.Enabled := True;
+    ToolButton3.Enabled := True;
+    ToolButton4.Enabled := True;
+    ToolButton5.Enabled := True;
+    ToolButton6.Enabled := True;
+    ToolButton7.Enabled := True;
+    ToolButton8.Enabled := True;
+    ToolButton9.Enabled := True;
+    ToolButton10.Enabled := True;
+    ToolButton11.Enabled := True;
+    ToolButton12.Enabled := True;
+    ToolButton13.Enabled := True;
+    ToolButton14.Enabled := True;
+    MenuItem3.Enabled := True;
+    MenuItem6.Enabled := True;
+    Morfologicos.Enabled := True;
   end;
 end;
 
@@ -617,8 +617,8 @@ end;
 
 procedure TForm1.ToolButton4Click(Sender: TObject);
 begin
-  ClickEnabled:=True;
-  StatusBar1.Panels[10].Text := 'Modo Selección'
+  ClickEnabled := True;
+  StatusBar1.Panels[10].Text := 'Modo Selección';
 end;
 
 procedure TForm1.ToolButton5Click(Sender: TObject);
@@ -705,7 +705,7 @@ end;
 
 procedure TForm1.ToolButton9Click(Sender: TObject);
 var
-  dist1,dist2: Double;
+  dist1, dist2: double;
 begin
   dist1 := sqrt((P2.X - P1.X) * (P2.X - P1.X) + (P1.Y - P1.Y) * (P1.Y - P1.Y));
   dist2 := sqrt((P1.X - P1.X) * (P1.X - P1.X) + (P2.Y - P1.Y) * (P2.Y - P1.Y));
@@ -735,28 +735,28 @@ begin
 end;
 
 procedure TForm1.Image1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: integer);
 begin
   if ClickEnabled then
   begin
     if Button = mbLeft then
     begin
-      points[0]:=X;
-      points[1]:=Y;
-      CounterL:=1;
+      points[0] := X;
+      points[1] := Y;
+      CounterL := 1;
     end;
     if Button = mbRight then
     begin
-      points[2]:=X;
-      points[3]:=Y;
-      counterR:=1;
+      points[2] := X;
+      points[3] := Y;
+      counterR := 1;
     end;
     if (CounterL = 1) and (counterR = 1) then
     begin
-      P1.X:=Min(points[0],points[2]);
-      P2.X:=Max(points[0],points[2]);
-      P1.Y:=Min(points[1],points[3]);
-      P2.Y:=Max(points[1],points[3]);
+      P1.X := Min(points[0], points[2]);
+      P2.X := Max(points[0], points[2]);
+      P1.Y := Min(points[1], points[3]);
+      P2.Y := Max(points[1], points[3]);
       CounterL := 0;
       counterR := 0;
     end;
@@ -916,7 +916,7 @@ begin
       sumatoria := sumatoria + MAT[i, j, 0];
     end;
   end;
-  threshold := sumatoria div (ALTO*ANCHO);
+  threshold := sumatoria div (ALTO * ANCHO);
   for i := 0 to ALTO - 1 do
   begin
     for j := 0 to ANCHO - 1 do
@@ -942,7 +942,7 @@ var
   i, j, x, y: integer;
   sum: byte;
 const
-  Estructura: array[0..2, 0..2] of Byte = (
+  Estructura: array[0..2, 0..2] of byte = (
     (1, 0, 1),
     (0, 0, 0),
     (1, 0, 1)
@@ -952,35 +952,36 @@ begin
   begin
     SetLength(AuxMAT, ALTO, ANCHO, 3);
     copMAM(AuxMAT2, MAT);
-    firsterosion:=False;
+    firsterosion := False;
   end;
   for i := 1 to ALTO - 2 do
   begin
     for j := 1 to ANCHO - 2 do
     begin
-        sum := 0;
-        for x := -1 to 1 do
+      sum := 0;
+      for x := -1 to 1 do
+      begin
+        for y := -1 to 1 do
         begin
-          for y := -1 to 1 do
+          if (AuxMAT2[i + x, j + y, 0] = Estructura[x + 1, y + 1]) and
+            (Estructura[x + 1, y + 1] = 0) then
           begin
-            if (AuxMAT2[i + x, j + y, 0] = Estructura[x + 1, y + 1]) and (Estructura[x + 1, y + 1] = 0)  then
-            begin
-              sum:= sum + 1;
-            end;
+            sum := sum + 1;
           end;
         end;
-        if sum = 5 then
-        begin
-          AuxMAT[i, j, 0] := 0;
-          AuxMAT[i, j, 1] := 0;
-          AuxMAT[i, j, 2] := 0;
-        end
-        else
-        begin
-          AuxMAT[i, j, 0] := 255;
-          AuxMAT[i, j, 1] := 255;
-          AuxMAT[i, j, 2] := 255;
-        end;
+      end;
+      if sum = 5 then
+      begin
+        AuxMAT[i, j, 0] := 0;
+        AuxMAT[i, j, 1] := 0;
+        AuxMAT[i, j, 2] := 0;
+      end
+      else
+      begin
+        AuxMAT[i, j, 0] := 255;
+        AuxMAT[i, j, 1] := 255;
+        AuxMAT[i, j, 2] := 255;
+      end;
     end;
   end;
   copMAM(AuxMAT2, AuxMAT);
@@ -1008,26 +1009,27 @@ begin
 end;
 
 procedure TForm1.Image1MouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+  Shift: TShiftState; X, Y: integer);
 begin
   if ClickEnabled then
   begin
     if Button = mbLeft then
     begin
-      ShowMessage('Primer punto: ' + IntToStr(X) +', '+ IntToStr(Y));
-      countL:=1;
+      ShowMessage('Primer punto: ' + IntToStr(X) + ', ' + IntToStr(Y));
+      countL := 1;
     end;
     if Button = mbRight then
     begin
-      ShowMessage('Segundo punto: ' + IntToStr(X)+', '+ IntToStr(Y) );
-      countR:=1;
+      ShowMessage('Segundo punto: ' + IntToStr(X) + ', ' + IntToStr(Y));
+      countR := 1;
     end;
     if (countL = 1) and (countR = 1) then
     begin
       ShowMessage('Ahora puede aplicar ciertos filtros a la región seleccionada :)');
-      StatusBar1.Panels[11].Text := 'Región Selec: ' + IntToStr(P2.Y-P1.Y) + 'x'+ IntToStr(P2.X-P1.X);
-      countL:=0;
-      countR:=0;
+      StatusBar1.Panels[11].Text :=
+        'Región Selec: ' + IntToStr(P2.Y - P1.Y) + 'x' + IntToStr(P2.X - P1.X);
+      countL := 0;
+      countR := 0;
     end;
   end;
 end;
@@ -1114,9 +1116,8 @@ begin
     begin
       for k := 0 to 2 do
       begin
-        MAT[i, j, k] := Round(
-          (0.5) * (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) +
-          Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
+        MAT[i, j, k] := Round((0.5) *
+          (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) + Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
       end;
     end;
   end;
@@ -1285,4 +1286,5 @@ begin
   Form2.DrawHistogramm(M, ANCHO, ALTO);
   Form2.Show;
 end;
+
 end.
