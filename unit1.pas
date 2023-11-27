@@ -56,30 +56,21 @@ type
     OpenPictureDialog1: TOpenPictureDialog;
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
-    procedure DerClick(Sender: TObject);
     procedure ErosionClick(Sender: TObject);
-    procedure FiltroGrisesClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure GammaClick(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
-    procedure binarizacionClick(Sender: TObject);
     procedure Image1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure IzqClick(Sender: TObject);
     procedure LBPSTDClick(Sender: TObject);
     procedure LBPTHRESHOLDClick(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
-    procedure Abrir_ScanlineClick(Sender: TObject);
     procedure FiltroNegativoClick(Sender: TObject);
     procedure colorxyzClick(Sender: TObject);
     procedure HistogramaaClick(Sender: TObject);
     procedure BordesClick(Sender: TObject);
     procedure ReduxContrastClick(Sender: TObject);
-    procedure ReflexionClick(Sender: TObject);
-    procedure RestaurarClick(Sender: TObject);
-    procedure SuavizadoAritClick(Sender: TObject);
     procedure TanhipClick(Sender: TObject);
     procedure ToolButton10Click(Sender: TObject);
     procedure ToolButton11Click(Sender: TObject);
@@ -187,30 +178,6 @@ begin
     copiaIM(ALTO, ANCHO, MAT); //copiar valores RGB a la MAtriz
   end;
 
-end;
-
-procedure TForm1.Abrir_ScanlineClick(Sender: TObject);
-begin
-  //if OpenPictureDialog1.Execute then
-  //begin
-  //  Image1.Enabled := True;
-  //  pathFile := OpenPictureDialog1.FileName;
-  //  BMAP.LoadFromFile(pathFile);
-  //  ALTO := BMAP.Height;
-  //  ANCHO := BMAP.Width;
-  //
-  //  if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
-  //  begin
-  //    BMAP.PixelFormat := pf24bit;
-  //  end;
-  //
-  //  StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
-  //  SetLength(MAT, ALTO, ANCHO, 3);
-  //  copBM(ALTO, ANCHO, MAT, BMAP);
-  //  Image1.Picture.Assign(BMAP);  //visulaizar imagen
-  //  histograma(MAT);
-  //end;
-  //
 end;
 
 procedure TForm1.FiltroNegativoClick(Sender: TObject);
@@ -466,99 +433,6 @@ begin
   colorscheme[255, 0] := colors[3, 0];
   colorscheme[255, 1] := colors[3, 1];
   colorscheme[255, 2] := colors[3, 2];
-end;
-
-procedure TForm1.ReflexionClick(Sender: TObject);
-var
-  i, j, k, midpoin, auxval: integer;
-begin
-  //copMAM(AuxMAT, MAT);
-  //midpoin := ANCHO div 2;
-  //for i := 0 to ALTO - 1 do
-  //begin
-  //  for j := 0 to midpoin - 1 do
-  //  begin
-  //    for k := 0 to 2 do
-  //    begin
-  //      MAT[i, (midpoin - 1 - j), k] := AuxMAT[i, j, k];
-  //    end;
-  //  end;
-  //end;
-  //for i := 0 to ALTO - 1 do
-  //begin
-  //  auxval := 0;
-  //  for j := midpoin to ANCHO - 1 do
-  //  begin
-  //    for k := 0 to 2 do
-  //    begin
-  //      MAT[i, (ANCHO - 1 - auxval), k] := AuxMAT[i, j, k];
-  //    end;
-  //    auxval := auxval + 1;
-  //  end;
-  //end;
-  //copMB(ALTO, ANCHO, MAT, BMAP);
-  //Image1.Picture.Assign(BMAP);
-end;
-
-procedure TForm1.RestaurarClick(Sender: TObject);
-begin
-  //BMAP.LoadFromFile(pathFile);
-  //ALTO := BMAP.Height;
-  //ANCHO := BMAP.Width;
-  //if BMAP.PixelFormat <> pf24bit then   //garantizar 8 bits por canal
-  //begin
-  //  BMAP.PixelFormat := pf24bit;
-  //end;
-  //counter := 0;
-  //grades := 0.0;
-  //StatusBar1.Panels[8].Text := IntToStr(ALTO) + 'x' + IntToStr(ANCHO);
-  //SetLength(MAT, ALTO, ANCHO, 3);
-  //copBM(ALTO, ANCHO, MAT, BMAP);
-  //Image1.Picture.Assign(BMAP);  //visulaizar imagen
-  //histograma(MAT);
-end;
-
-procedure TForm1.SuavizadoAritClick(Sender: TObject);
-var
-  i, j, x, y: integer;
-  k: byte;
-  sum: double;
-  temp: array[0..2, 0..2] of double;
-const
-  MascaraSuavizado: array[0..2, 0..2] of single = (
-    (1 / 8, 1 / 8, 1 / 8),
-    (1 / 8, 1 / 8, 1 / 8),
-    (1 / 8, 1 / 8, 1 / 8)
-    );
-begin
-  //SetLength(AuxMAT, ALTO, ANCHO, 3);
-  //for i := 1 to ALTO - 2 do
-  //begin
-  //  for j := 1 to ANCHO - 2 do
-  //  begin
-  //    for k := 0 to 2 do
-  //    begin
-  //      sum := 0;
-  //      for x := -1 to 1 do
-  //      begin
-  //        for y := -1 to 1 do
-  //        begin
-  //          if (x <> 0) or (y <> 0) then
-  //          begin
-  //            temp[x + 1, y + 1] :=
-  //              MAT[i + x, j + y, k] * MascaraSuavizado[x + 1, y + 1];
-  //            sum := sum + temp[x + 1, y + 1];
-  //          end;
-  //        end;
-  //      end;
-  //      AuxMAT[i, j, k] := Round(sum);
-  //    end;
-  //  end;
-  //end;
-  //copMAM(MAT, AuxMAT);
-  //copMB(ALTO, ANCHO, MAT, BMAP);
-  //Image1.Picture.Assign(BMAP);
-  //histograma(MAT);
 end;
 
 procedure TForm1.tanhyper(alphaval: double);
@@ -860,18 +734,6 @@ begin
   BMAP := TBitmap.Create;  //crear el objeto BMAP
 end;
 
-procedure TForm1.GammaClick(Sender: TObject);
-begin
-  //Form4.ShowModal;
-  //if Form4.ModalResult = mrOk then
-  //begin
-  //  gammaFilter(Form4.gamval);
-  //  copMB(ALTO, ANCHO, MAT, BMAP);
-  //  Image1.Picture.Assign(BMAP);
-  //  histograma(MAT);
-  //end;
-end;
-
 procedure TForm1.Image1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -983,14 +845,6 @@ begin
   end;
 end;
 
-procedure TForm1.FiltroGrisesClick(Sender: TObject);
-begin
-  //escala_de_grises();
-  //copMB(ALTO, ANCHO, MAT, BMAP);
-  //Image1.Picture.Assign(BMAP);
-  //histograma(MAT);
-end;
-
 procedure TForm1.copMAM(var OriMAT: MATRGB; var AuxiMAT: MATRGB);
 var
   i, j, k: integer;
@@ -1050,26 +904,6 @@ begin
   end;
 end;
 
-
-procedure TForm1.DerClick(Sender: TObject);
-begin
-  //if counter <= 3 then
-  //begin
-  //  SetLength(AuxMAT, 0, 0, 0);
-  //  grades := 90.0;
-  //  RotateImage(MAT, AuxMAT, grades);
-  //  copMAM(MAT, AuxMAT);
-  //  copMB(ALTO, ANCHO, MAT, BMAP);
-  //  Image1.Picture.Assign(BMAP);
-  //  if counter = 3 then
-  //  begin
-  //    grades := 0.0;
-  //    counter := -1;
-  //  end;
-  //end;
-  //counter := counter + 1;
-end;
-
 procedure TForm1.binarize();
 var
   sumatoria, threshold, i, j: integer;
@@ -1114,7 +948,6 @@ const
     (1, 0, 1)
     );
 begin
-  //copMAM(AuxMAT, MAT);
   if firsterosion then
   begin
     SetLength(AuxMAT, ALTO, ANCHO, 3);
@@ -1159,8 +992,6 @@ procedure TForm1.ErosionClick(Sender: TObject);
 begin
   binarize();
   erosionate();
-  //copMB(ALTO, ANCHO, MAT, BMAP);
-  //Image1.Picture.Assign(BMAP);
   histograma(AuxMAT);
   Form5.Show;
 end;
@@ -1174,28 +1005,6 @@ begin
   StatusBar1.Panels[5].Text := IntToStr(MAT[y, x, 1]);
   StatusBar1.Panels[6].Text := IntToStr(MAT[y, x, 2]);
 
-end;
-
-procedure TForm1.binarizacionClick(Sender: TObject);
-begin
-  //if ALTO = ANCHO then
-  //begin
-  //  Form3.TrackBar1.Min := 3;
-  //  Form3.TrackBar1.Max := ALTO;
-  //  Form3.ShowModal;
-  //  if Form3.ModalResult = mrOk then
-  //  begin
-  //    escala_de_grises();
-  //    binarizacionDi();
-  //    copMB(ALTO, ANCHO, MAT, BMAP);
-  //    Image1.Picture.Assign(BMAP);
-  //    histograma(MAT);
-  //  end;
-  //end
-  //else
-  //begin
-  //  ShowMessage('La imagen no tiene las mismas dimensiones en alto y ancho :(');
-  //end;
 end;
 
 procedure TForm1.Image1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -1221,25 +1030,6 @@ begin
       countR:=0;
     end;
   end;
-end;
-
-procedure TForm1.IzqClick(Sender: TObject);
-begin
-  //if counter >= -3 then
-  //begin
-  //  SetLength(AuxMAT, 0, 0, 0);
-  //  grades := -90.0;
-  //  RotateImage(MAT, AuxMAT, grades);
-  //  copMAM(MAT, AuxMAT);
-  //  copMB(ALTO, ANCHO, MAT, BMAP);
-  //  Image1.Picture.Assign(BMAP);
-  //  if counter = -3 then
-  //  begin
-  //    grades := 0.0;
-  //    counter := 1;
-  //  end;
-  //end;
-  //counter := counter - 1;
 end;
 
 procedure TForm1.lbpSTDTHRES();
@@ -1336,7 +1126,6 @@ procedure TForm1.LBPSTDClick(Sender: TObject);
 begin
   generatecolscheme();
   escala_de_grises();
-  //SetLength(AuxMAT, ALTO, ANCHO, 3);
   lbpSTDTHRES();
   copMAM(MAT, AuxMAT);
   copMB(ALTO, ANCHO, MAT, BMAP);
@@ -1433,9 +1222,7 @@ procedure Tform1.copiaIM(al, an: integer; var M: MATRGB);
 var
   i, j: integer;
   cl: Tcolor;
-
 begin
-
   for i := 0 to al - 1 do
   begin
     for j := 0 to an - 1 do
@@ -1444,15 +1231,11 @@ begin
       M[i, j, 0] := GetRValue(cl);
       M[i, j, 1] := GetGValue(cl);
       M[i, j, 2] := GetBValue(cl);
-
     end; //j
   end;//i
-
 end;
 
-
 //copiar de Bitmap a Matriz
-
 procedure Tform1.copBM(al, an: integer; var M: MATRGB; B: Tbitmap);
 var
   i, j, k: integer;
@@ -1463,21 +1246,17 @@ begin
     B.BeginUpdate;
     P := B.ScanLine[i];  //ller RGB de todo el renglon-i
     B.EndUpdate;
-
     for j := 0 to an - 1 do
     begin
       k := 3 * j;
       M[i, j, 0] := P[k + 2];
       M[i, j, 1] := P[k + 1];
       M[i, j, 2] := P[k];
-
     end; //j
   end; //i
-
 end;
 
 //procedimiento para copiar de MAtriz a bitmap
-
 procedure tform1.copMB(al, an: integer; M: MATRGB; var B: Tbitmap);
 var
   i, j, k: integer;
@@ -1491,7 +1270,6 @@ begin
     P := B.ScanLine[i];
     //Invocar método para tener listo en memoria la localidad a modificar--> toda la fila
     B.EndUpdate;
-
     for j := 0 to an - 1 do
     begin             //asignando valores de matriz al apuntador scanline--> Bitmap
       k := 3 * j;
@@ -1507,5 +1285,4 @@ begin
   Form2.DrawHistogramm(M, ANCHO, ALTO);
   Form2.Show;
 end;
-
 end.
