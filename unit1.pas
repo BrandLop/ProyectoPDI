@@ -15,11 +15,11 @@ type
   { TForm1 }
 
   MATRGB = array of array of array of byte;
-  matriz = array of array of Double;
+  matriz = array of array of double;
   //Tri-dimensional para almacenar contenido de imagen
   TNumeroComplejo = record
-    Re: Double;
-    Im: Double;
+    Re: double;
+    Im: double;
   end;
 
   TForm1 = class(TForm)
@@ -569,96 +569,96 @@ end;
 
 procedure TForm1.TFourier();
 var
-  n,m,u,v,ut,vt: Integer;
-  sumReal, sumIm, phiu, phiv, cosw, senw, s :  Real;
+  n, m, u, v, ut, vt: integer;
+  sumReal, sumIm, phiu, phiv, cosw, senw, s: real;
 begin
   //factor escalar común.
-  s := 1/sqrt(ANCHO * ALTO);
-  for u:=0 to ALTO-1 do
+  s := 1 / sqrt(ANCHO * ALTO);
+  for u := 0 to ALTO - 1 do
   begin
-    for v:=0 to ANCHO-1 do
+    for v := 0 to ANCHO - 1 do
     begin
       sumReal := 0;
       sumIm := 0;
-      ut := u - floor(ALTO/2);
-      vt := v - floor(ANCHO/2);
+      ut := u - floor(ALTO / 2);
+      vt := v - floor(ANCHO / 2);
       //factores comunes
-      phiu := 2 * Pi * ut/ALTO;
-      phiv := 2 * Pi * vt/ANCHO;
-      for n:=0 to ALTO-1 do
+      phiu := 2 * Pi * ut / ALTO;
+      phiv := 2 * Pi * vt / ANCHO;
+      for n := 0 to ALTO - 1 do
       begin
-        for m:=0 to ANCHO-1 do
+        for m := 0 to ANCHO - 1 do
         begin
-          cosw := cos(phiu*n + phiv*m);
-          senw := sin(phiu*n + phiv*m);
-          sumReal := sumReal + MAT[n,m,0] * cosw + MAT[n,m,0] * senw;
-          sumIm := sumIm + MAT[n,m,0] * cosw - MAT[n,m,0] * senw;
+          cosw := cos(phiu * n + phiv * m);
+          senw := sin(phiu * n + phiv * m);
+          sumReal := sumReal + MAT[n, m, 0] * cosw + MAT[n, m, 0] * senw;
+          sumIm := sumIm + MAT[n, m, 0] * cosw - MAT[n, m, 0] * senw;
         end;
       end;
-      FMAT[u,v].Re := sumReal * s;
-      FMAT[u,v].Im := sumIm * s;
+      FMAT[u, v].Re := sumReal * s;
+      FMAT[u, v].Im := sumIm * s;
     end;
   end;
-  ProgressBar1.Position:=100;
+  ProgressBar1.Position := 100;
 end;
 
 procedure TForm1.InvTFourier();
 var
-  n,m,u,v,ut,vt: Integer;
-  sumReal, sumIm, phin, phim, cosw, senw, s, Dist, Filt:  Real;
+  n, m, u, v, ut, vt: integer;
+  sumReal, sumIm, phin, phim, cosw, senw, s, Dist, Filt: real;
 begin
   //factor escalar común.
-  s := 1/sqrt(ANCHO * ALTO);
-  for n:=0 to ALTO-1 do
+  s := 1 / sqrt(ANCHO * ALTO);
+  for n := 0 to ALTO - 1 do
   begin
-    for m:=0 to ANCHO-1 do
+    for m := 0 to ANCHO - 1 do
     begin
       sumReal := 0;
       sumIm := 0;
       //factores comunes
-      phin := 2 * Pi * n/ALTO;
-      phim := 2 * Pi * m/ANCHO;
-      for u:=0 to ALTO-1 do
+      phin := 2 * Pi * n / ALTO;
+      phim := 2 * Pi * m / ANCHO;
+      for u := 0 to ALTO - 1 do
       begin
-        for v:=0 to ANCHO-1 do
+        for v := 0 to ANCHO - 1 do
         begin
-          Dist:= sqrt(sqr(u - ALTO/2)+sqr(v - ANCHO/2));
-          Filt:= 1/(1+power(60/Dist,2*1));
-          cosw := cos(phin*u + phim*v);
-          senw := -sin(phin*u + phim*v);
-          sumReal :=sumReal + (Filt*(FMAT[u,v].Re * cosw + FMAT[u,v].Im * senw));
-          sumIm :=sumIm + (Filt* (FMAT[u,v].Im * cosw - FMAT[u,v].Re * senw));
+          Dist := sqrt(sqr(u - ALTO / 2) + sqr(v - ANCHO / 2));
+          Filt := 1 / (1 + power(60 / Dist, 2 * 1));
+          cosw := cos(phin * u + phim * v);
+          senw := -sin(phin * u + phim * v);
+          sumReal := sumReal + (Filt * (FMAT[u, v].Re * cosw + FMAT[u, v].Im * senw));
+          sumIm := sumIm + (Filt * (FMAT[u, v].Im * cosw - FMAT[u, v].Re * senw));
         end;
       end;
-      INVFMAT[n,m].Re := sumReal * s;
-      INVFMAT[n,m].Im := sumIm * s;
+      INVFMAT[n, m].Re := sumReal * s;
+      INVFMAT[n, m].Im := sumIm * s;
     end;
   end;
 end;
 
 procedure TForm1.espectroFou();
 var
-  u,v: Integer;
-  maxVal, minVal: Double;
+  u, v: integer;
+  maxVal, minVal: double;
   loga: double;
 begin
   maxVal := -MaxDouble;
   minVal := MaxDouble;
-  for u:=0 to ALTO-1 do
+  for u := 0 to ALTO - 1 do
   begin
-    for v:=0 to ANCHO-1 do
+    for v := 0 to ANCHO - 1 do
     begin
-      magnitudes[u,v] := Sqrt(sqr(FMAT[u,v].Re)+ sqr(FMAT[u,v].Im));
-      maxVal := Max(maxVal, magnitudes[u,v]);
-      minVal := Min(minVal, magnitudes[u,v]);
+      magnitudes[u, v] := Sqrt(sqr(FMAT[u, v].Re) + sqr(FMAT[u, v].Im));
+      maxVal := Max(maxVal, magnitudes[u, v]);
+      minVal := Min(minVal, magnitudes[u, v]);
     end;
   end;
-  for u:=0 to ALTO-1 do
+  for u := 0 to ALTO - 1 do
   begin
-    for v:=0 to ANCHO-1 do
+    for v := 0 to ANCHO - 1 do
     begin
-      loga := ln(magnitudes[u,v] + 1);
-      magnitudes[u,v] := (loga - ln(loga + 1)) / (ln(maxVal + 1) - ln(minVal + 1)) * 255;
+      loga := ln(magnitudes[u, v] + 1);
+      magnitudes[u, v] := (loga - ln(loga + 1)) / (ln(maxVal + 1) - ln(minVal + 1)) * 255;
     end;
   end;
 end;
@@ -669,14 +669,14 @@ var
   k: byte;
   espectro: MATRGB;
 begin
-  SetLength(espectro, ALTO, ANCHO,3);
-  for i := 0 to ALTO-1 do
+  SetLength(espectro, ALTO, ANCHO, 3);
+  for i := 0 to ALTO - 1 do
   begin
-    for j := 0 to ANCHO-1 do
+    for j := 0 to ANCHO - 1 do
     begin
       for k := 0 to 2 do
       begin
-        espectro[i,j,k] := Round(magnitudes[i,j]);
+        espectro[i, j, k] := Round(magnitudes[i, j]);
       end;
     end;
   end;
@@ -686,39 +686,39 @@ end;
 
 procedure TForm1.viewInversa();
 var
-  i, j, min,max, value: integer;
+  i, j, min, max, Value: integer;
   k: byte;
   espectro: MATRGB;
 begin
-  SetLength(espectro, ALTO, ANCHO,3);
-  max:=espectro[0,0,0];
-  min:=espectro[0,0,0];
-  for i := 0 to ALTO-1 do
+  SetLength(espectro, ALTO, ANCHO, 3);
+  max := espectro[0, 0, 0];
+  min := espectro[0, 0, 0];
+  for i := 0 to ALTO - 1 do
   begin
-    for j := 0 to ANCHO-1 do
+    for j := 0 to ANCHO - 1 do
     begin
       for k := 0 to 2 do
       begin
-          espectro[i,j,k] := Round(abs(INVFMAT[i,j].Re));
-          if espectro[i,j,0] < min then
-          begin
-            min:=espectro[i,j,0];
-          end;
-          if espectro[i,j,0] > max then
-          begin
-            max:=espectro[i,j,0];
-          end;
+        espectro[i, j, k] := Round(abs(INVFMAT[i, j].Re));
+        if espectro[i, j, 0] < min then
+        begin
+          min := espectro[i, j, 0];
+        end;
+        if espectro[i, j, 0] > max then
+        begin
+          max := espectro[i, j, 0];
+        end;
       end;
     end;
   end;
-  for i:=0 to ALTO-1 do
+  for i := 0 to ALTO - 1 do
   begin
-    for j:=0 to ANCHO-1 do
+    for j := 0 to ANCHO - 1 do
     begin
-      value:= Round((255-0)/(max-min)*(espectro[i,j,0]-min)+0);
-      espectro[i,j,0] := Round(value);
-      espectro[i,j,1] := Round(value);
-      espectro[i,j,2] := Round(value);
+      Value := Round((255 - 0) / (max - min) * (espectro[i, j, 0] - min) + 0);
+      espectro[i, j, 0] := Round(Value);
+      espectro[i, j, 1] := Round(Value);
+      espectro[i, j, 2] := Round(Value);
     end;
   end;
   copMB(ALTO, ANCHO, espectro, BMAP);
@@ -781,7 +781,7 @@ begin
     MenuItem6.Enabled := True;
     MenuItem4.Enabled := True;
     Morfologicos.Enabled := True;
-    ProgressBar1.Position:=0;
+    ProgressBar1.Position := 0;
   end;
 end;
 
@@ -801,7 +801,7 @@ begin
   copBM(ALTO, ANCHO, MAT, BMAP);
   Image1.Picture.Assign(BMAP);  //visulaizar imagen
   histograma(MAT);
-  ProgressBar1.Position:=0;
+  ProgressBar1.Position := 0;
 end;
 
 procedure TForm1.ToolButton3Click(Sender: TObject);
@@ -1320,8 +1320,9 @@ begin
     begin
       for k := 0 to 2 do
       begin
-        MAT[i, j, k] := Round((0.5) *
-          (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) + Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
+        MAT[i, j, k] := Round(
+          (0.5) * (Abs(MAT[i + 1, j, k] - MAT[i, j, k]) +
+          Abs(MAT[i, j + 1, k] - MAT[i, j, k])));
       end;
     end;
   end;
