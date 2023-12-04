@@ -15,6 +15,7 @@ type
   { TForm1 }
 
   MATRGB = array of array of array of byte;
+  matriz = array of array of Double;
   //Tri-dimensional para almacenar contenido de imagen
   TNumeroComplejo = record
     Re: Double;
@@ -32,6 +33,8 @@ type
     LBPSTD: TMenuItem;
     Bordes: TMenuItem;
     Erosion: TMenuItem;
+    MenuItem4: TMenuItem;
+    FiltroHP: TMenuItem;
     ProgressBar1: TProgressBar;
     Salir: TMenuItem;
     Morfologicos: TMenuItem;
@@ -63,6 +66,7 @@ type
     ScrollBox1: TScrollBox;
     StatusBar1: TStatusBar;
     procedure ErosionClick(Sender: TObject);
+    procedure FiltroHPClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: integer);
@@ -142,8 +146,10 @@ type
     procedure erosionate();
     procedure binarize();
     procedure TFourier();
+    procedure InvTFourier();
     procedure espectroFou();
     procedure viewEspectro();
+    procedure viewInversa();
   end;
 
 var
@@ -164,8 +170,8 @@ var
   countR: byte = 0;
   firsterosion: boolean = True;
   points: array[0..3] of integer;
-  FMAT: array of array of TNumeroComplejo;
-  magnitudes: array of array of Double;
+  FMAT, INVFMAT: array of array of TNumeroComplejo;
+  magnitudes: matriz;
 
 implementation
 
@@ -596,6 +602,40 @@ begin
   ProgressBar1.Position:=100;
 end;
 
+procedure TForm1.InvTFourier();
+var
+  n,m,u,v,ut,vt: Integer;
+  sumReal, sumIm, phin, phim, cosw, senw, s, Dist, Filt:  Real;
+begin
+  //factor escalar común.
+  s := 1/sqrt(ANCHO * ALTO);
+  for n:=0 to ALTO-1 do
+  begin
+    for m:=0 to ANCHO-1 do
+    begin
+      sumReal := 0;
+      sumIm := 0;
+      //factores comunes
+      phin := 2 * Pi * n/ALTO;
+      phim := 2 * Pi * m/ANCHO;
+      for u:=0 to ALTO-1 do
+      begin
+        for v:=0 to ANCHO-1 do
+        begin
+          Dist:= sqrt(sqr(u - ALTO/2)+sqr(v - ANCHO/2));
+          Filt:= 1/(1+power(60/Dist,2*1));
+          cosw := cos(phin*u + phim*v);
+          senw := -sin(phin*u + phim*v);
+          sumReal :=sumReal + (Filt*(FMAT[u,v].Re * cosw + FMAT[u,v].Im * senw));
+          sumIm :=sumIm + (Filt* (FMAT[u,v].Im * cosw - FMAT[u,v].Re * senw));
+        end;
+      end;
+      INVFMAT[n,m].Re := sumReal * s;
+      INVFMAT[n,m].Im := sumIm * s;
+    end;
+  end;
+end;
+
 procedure TForm1.espectroFou();
 var
   u,v: Integer;
@@ -644,9 +684,51 @@ begin
   Form5.Image1.Picture.Assign(BMAP);
 end;
 
+procedure TForm1.viewInversa();
+var
+  i, j, min,max, value: integer;
+  k: byte;
+  espectro: MATRGB;
+begin
+  SetLength(espectro, ALTO, ANCHO,3);
+  max:=espectro[0,0,0];
+  min:=espectro[0,0,0];
+  for i := 0 to ALTO-1 do
+  begin
+    for j := 0 to ANCHO-1 do
+    begin
+      for k := 0 to 2 do
+      begin
+          espectro[i,j,k] := Round(abs(INVFMAT[i,j].Re));
+          if espectro[i,j,0] < min then
+          begin
+            min:=espectro[i,j,0];
+          end;
+          if espectro[i,j,0] > max then
+          begin
+            max:=espectro[i,j,0];
+          end;
+      end;
+    end;
+  end;
+  for i:=0 to ALTO-1 do
+  begin
+    for j:=0 to ANCHO-1 do
+    begin
+      value:= Round((255-0)/(max-min)*(espectro[i,j,0]-min)+0);
+      espectro[i,j,0] := Round(value);
+      espectro[i,j,1] := Round(value);
+      espectro[i,j,2] := Round(value);
+    end;
+  end;
+  copMB(ALTO, ANCHO, espectro, BMAP);
+  Form5.Image1.Picture.Assign(BMAP);
+end;
+
 procedure TForm1.ToolButton15Click(Sender: TObject);
 begin
   SetLength(FMAT, ALTO, ANCHO);
+  SetLength(INVFMAT, ALTO, ANCHO);
   SetLength(magnitudes, ALTO, ANCHO);
   TFourier();
   espectroFou();
@@ -697,6 +779,7 @@ begin
     ToolButton15.Enabled := True;
     MenuItem3.Enabled := True;
     MenuItem6.Enabled := True;
+    MenuItem4.Enabled := True;
     Morfologicos.Enabled := True;
     ProgressBar1.Position:=0;
   end;
@@ -1109,6 +1192,13 @@ begin
   erosionate();
   histograma(AuxMAT);
   Form5.Show;
+end;
+
+procedure TForm1.FiltroHPClick(Sender: TObject);
+begin
+  InvTFourier();
+  viewInversa();
+  Form5.ShowModal;
 end;
 
 procedure TForm1.Image1MouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
