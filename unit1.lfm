@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 258
+  Left = 372
   Height = 732
-  Top = 104
+  Top = 113
   Width = 997
   Caption = 'Form1'
   ClientHeight = 705
@@ -94,139 +94,184 @@ object Form1: TForm1
     object ToolButton1: TToolButton
       Cursor = crHandPoint
       Left = 1
+      Hint = 'Abrir Imágen'
       Top = 2
       Caption = 'ToolButton1'
       ImageIndex = 0
       OnClick = ToolButton1Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton2: TToolButton
       Cursor = crHandPoint
       Left = 24
+      Hint = 'Restaurar Img'
       Top = 2
       Caption = 'ToolButton2'
       Enabled = False
       ImageIndex = 1
       OnClick = ToolButton2Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton3: TToolButton
       Cursor = crHandPoint
       Left = 47
+      Hint = 'Escala de gris'
       Top = 2
       Caption = 'ToolButton3'
       Enabled = False
       ImageIndex = 2
       OnClick = ToolButton3Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton4: TToolButton
       Cursor = crHandPoint
       Left = 70
+      Hint = 'Modo selección'
       Top = 2
       Caption = 'ToolButton4'
       DragCursor = crHandPoint
       Enabled = False
       ImageIndex = 3
       OnClick = ToolButton4Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton5: TToolButton
       Cursor = crHandPoint
       Left = 93
+      Hint = 'Rotar Derecha'
       Top = 2
       Caption = 'ToolButton5'
       DragCursor = crHandPoint
       Enabled = False
       ImageIndex = 4
       OnClick = ToolButton5Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton6: TToolButton
       Cursor = crHandPoint
       Left = 116
+      Hint = 'Rotar izquierda'
       Top = 2
       Caption = 'ToolButton6'
       DragCursor = crHandPoint
       Enabled = False
       ImageIndex = 5
       OnClick = ToolButton6Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton7: TToolButton
       Cursor = crHandPoint
       Left = 139
+      Hint = 'Reflexión'
       Top = 2
       Caption = 'ToolButton7'
       Enabled = False
       ImageIndex = 6
       OnClick = ToolButton7Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton8: TToolButton
       Cursor = crHandPoint
       Left = 162
+      Hint = 'Correción Gamma'
       Top = 2
       Caption = 'ToolButton8'
       Enabled = False
       ImageIndex = 7
       OnClick = ToolButton8Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton9: TToolButton
       Cursor = crHandPoint
       Left = 185
+      Hint = 'Binarización Dinámica'
       Top = 2
       Caption = 'ToolButton9'
       Enabled = False
       ImageIndex = 8
       OnClick = ToolButton9Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton10: TToolButton
       Cursor = crHandPoint
       Left = 208
+      Hint = 'Histograma'
       Top = 2
       Caption = 'ToolButton10'
       Enabled = False
       ImageIndex = 9
       OnClick = ToolButton10Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton11: TToolButton
       Cursor = crHandPoint
       Left = 231
+      Hint = 'Suavizar'
       Top = 2
       Caption = 'ToolButton11'
       Enabled = False
       ImageIndex = 10
       OnClick = ToolButton11Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton12: TToolButton
       Cursor = crHandPoint
       Left = 254
+      Hint = 'Guardar como'
       Top = 2
       Caption = 'ToolButton12'
       Enabled = False
       ImageIndex = 11
       OnClick = ToolButton12Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton13: TToolButton
       Cursor = crHandPoint
       Left = 277
+      Hint = 'Patrón Circular'
       Top = 2
       Caption = 'ToolButton13'
       Enabled = False
       ImageIndex = 12
       OnClick = ToolButton13Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton14: TToolButton
       Cursor = crHandPoint
       Left = 300
+      Hint = 'Desactivar selección'
       Top = 2
       Caption = 'ToolButton14'
       Enabled = False
       ImageIndex = 13
       OnClick = ToolButton14Click
+      ParentShowHint = False
+      ShowHint = True
     end
     object ToolButton15: TToolButton
       Cursor = crHandPoint
       Left = 323
+      Hint = 'Trans. De Fourier'
       Top = 2
       Caption = 'ToolButton15'
       Enabled = False
       ImageIndex = 14
       OnClick = ToolButton15Click
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   object ProgressBar1: TProgressBar
@@ -296,6 +341,14 @@ object Form1: TForm1
       object Erosion: TMenuItem
         Caption = 'Erosion'
         OnClick = ErosionClick
+      end
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Fourier'
+      Enabled = False
+      object FiltroHP: TMenuItem
+        Caption = 'FiltroHP'
+        OnClick = FiltroHPClick
       end
     end
   end
